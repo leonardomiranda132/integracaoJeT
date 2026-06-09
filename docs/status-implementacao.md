@@ -15,7 +15,7 @@ Status operacional neste momento:
 - O caminho seguro de conferencia continua sendo dry-run, exportacao do lote e `npm run db:inspect` antes de novas execucoes reais.
 - A interface operacional propria em `Next.js` ja foi implementada e substituiu o n8n como caminho oficial.
 - A base local de operacao foi limpa em 2026-06-03 a pedido do usuario; as tabelas ficaram zeradas e `schema_migrations` foi preservada.
-- O repositorio GitHub esta publicado em `integracoes-alphabeto/Integra-aoJ-T`.
+- O repositorio GitHub oficial foi migrado para `leonardomiranda132/integracaoJeT`.
 - GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 via `npm run github:actions-config`.
 - O workflow `Sync diario J&T` esta ativo no GitHub.
 - O agendamento automatico esta seguro neste momento: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
@@ -384,7 +384,7 @@ Foi validado na pratica:
 - CSV operacional atualizado em `docs/operational-exports/orders-latest.csv` com 161 linhas e sem CPF, telefone ou endereco
 - workflow GitHub Actions diario criado em `.github/workflows/sync-diario-jt.yml`, agendado para 17:00 Sao Paulo e com trava para envio real via variavel `JT_SEND_ENABLED`
 - guia de hospedagem gratuita criado em `docs/hospedagem-gratuita.md` com arquitetura GitHub Actions + Neon Postgres + Netlify/Vercel
-- projeto publicado no GitHub em `integracoes-alphabeto/Integra-aoJ-T`, branch `main`
+- projeto migrado para o GitHub em `leonardomiranda132/integracaoJeT`, branch `main`
 
 Arquivos gerados durante os testes:
 

@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const DEFAULT_REPOSITORY = 'integracoes-alphabeto/Integra-aoJ-T';
+const DEFAULT_REPOSITORY = 'leonardomiranda132/integracaoJeT';
 
 const REQUIRED_SECRETS = [
   'DATABASE_URL',

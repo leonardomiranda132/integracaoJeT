@@ -55,38 +55,38 @@ npm run monitor:export-orders -- --format=json
 Conferir Secrets cadastradas sem exibir valores:
 
 ```bash
-gh secret list --repo integracoes-alphabeto/Integra-aoJ-T
+gh secret list --repo leonardomiranda132/integracaoJeT
 ```
 
 Conferir Variables cadastradas:
 
 ```bash
-gh variable list --repo integracoes-alphabeto/Integra-aoJ-T
+gh variable list --repo leonardomiranda132/integracaoJeT
 ```
 
 Manter o agendamento automatico em modo seguro:
 
 ```bash
-gh variable set JT_SEND_ENABLED --repo integracoes-alphabeto/Integra-aoJ-T --body false
-gh variable set POSTGRES_SSL --repo integracoes-alphabeto/Integra-aoJ-T --body true
+gh variable set JT_SEND_ENABLED --repo leonardomiranda132/integracaoJeT --body false
+gh variable set POSTGRES_SSL --repo leonardomiranda132/integracaoJeT --body true
 ```
 
 Rodar o workflow manual em dry-run, sem envio para a J&T:
 
 ```bash
-gh workflow run sync-diario-jt.yml --repo integracoes-alphabeto/Integra-aoJ-T --field send_enabled=false --field daily_send_limit=10
+gh workflow run sync-diario-jt.yml --repo leonardomiranda132/integracaoJeT --field send_enabled=false --field daily_send_limit=10
 ```
 
 Ver execucoes recentes:
 
 ```bash
-gh run list --repo integracoes-alphabeto/Integra-aoJ-T --workflow sync-diario-jt.yml --limit 5
+gh run list --repo leonardomiranda132/integracaoJeT --workflow sync-diario-jt.yml --limit 5
 ```
 
 Assistir logs de uma execucao:
 
 ```bash
-gh run watch --repo integracoes-alphabeto/Integra-aoJ-T <run-id>
+gh run watch --repo leonardomiranda132/integracaoJeT <run-id>
 ```
 
 ## Smoke test do TOTVS

@@ -8,7 +8,7 @@ fixo inicial, mantendo painel web, banco duravel e job diario.
 Repositorio GitHub usado:
 
 ```text
-git@github.com:integracoes-alphabeto/Integra-aoJ-T.git
+git@github.com:leonardomiranda132/integracaoJeT.git
 ```
 
 ## Arquitetura recomendada
