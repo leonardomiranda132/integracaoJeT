@@ -5,7 +5,7 @@
   "description": "Integracao batch diaria entre Virtual Age/TOTVS Moda e J&T Open Platform.",
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "next build dashboard",
     "check": "tsc --noEmit -p tsconfig.json",
     "db:migrate": "tsx src/app/jobs/run-migrations.ts",
     "db:inspect": "tsx src/app/jobs/inspect-postgres-report.ts",
@@ -27,7 +27,7 @@
     "github:actions-config": "node scripts/register-github-actions-config.mjs"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
