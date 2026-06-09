@@ -17,8 +17,42 @@ function getConnectionString(): string {
   return connectionString;
 }
 
+function hasExplicitSslDisable(): boolean {
+  return process.env.POSTGRES_SSL_FORCE_DISABLE === "true";
+}
+
+function isVercelRuntime(): boolean {
+  return process.env.VERCEL === "1" || process.env.VERCEL === "true";
+}
+
+function connectionStringRequestsSsl(connectionString: string): boolean {
+  try {
+    const url = new URL(connectionString);
+    const sslMode = url.searchParams.get("sslmode");
+    const ssl = url.searchParams.get("ssl");
+
+    return ssl === "true" || sslMode === "require" || sslMode === "verify-ca" || sslMode === "verify-full";
+  } catch {
+    return false;
+  }
+}
+
+export function isPostgresSslEnabled(): boolean {
+  if (hasExplicitSslDisable()) {
+    return false;
+  }
+
+  const connectionString = getConnectionString();
+
+  if (process.env.POSTGRES_SSL === "true") {
+    return true;
+  }
+
+  return isVercelRuntime() || connectionStringRequestsSsl(connectionString);
+}
+
 function createPool(): pg.Pool {
-  const ssl = process.env.POSTGRES_SSL === "true";
+  const ssl = isPostgresSslEnabled();
   const rejectUnauthorized = process.env.POSTGRES_SSL_REJECT_UNAUTHORIZED !== "false";
 
   return new Pool({

@@ -12,10 +12,15 @@ operacional no Vercel puxando do GitHub.
 - A URL informada `https://integra-ao-j-t-hvei.vercel.app/` respondeu
   `404 DEPLOYMENT_NOT_FOUND`, ou seja, o problema visivel agora e de deploy ou
   alias inexistente, nao de erro de runtime da aplicacao.
+- A URL nova `https://integracao-je-t.vercel.app/` respondeu `500` na home em
+  2026-06-09, enquanto `/api/health` respondeu `200`; o health mostrou banco
+  configurado, mas SSL efetivo desligado no deploy antigo.
 - O `vercel.json` foi ajustado para declarar explicitamente o preset `nextjs`,
   usar `npm run ui:build` e publicar `dashboard/.next`.
 - Foi criada a rota `GET /api/health` para validar se o deploy esta vivo sem
   depender da conexao com o Postgres.
+- O painel agora assume SSL automaticamente quando roda no Vercel e a home
+  mostra uma tela de diagnostico em vez de erro 500 cru se o Postgres falhar.
 
 ## Configuracao recomendada no Vercel
 
@@ -45,15 +50,21 @@ POSTGRES_POOL_MAX=5
 Nao usar `DATABASE_URL` apontando para `localhost`, porque o Vercel nao consegue
 acessar o banco local da maquina.
 
+Observacao: o codigo assume SSL no runtime do Vercel para proteger o caso mais
+comum com Neon. So desabilitar SSL no Vercel em uma excecao controlada usando
+`POSTGRES_SSL_FORCE_DISABLE=true`.
+
 ## Como validar depois do deploy
 
 1. Abrir a URL gerada pelo Vercel em `/api/health`.
 2. Confirmar que a resposta tem `status: "ok"`.
 3. Confirmar que `databaseConfigured` esta como `true`.
-4. Abrir `/` para validar o painel lendo o Neon.
-5. Se `/api/health` funciona e `/` falha, revisar `DATABASE_URL`, `POSTGRES_SSL`
+4. Confirmar que `databaseUrlKind` esta como `remote`, nao `local`.
+5. Confirmar que `postgresSsl` esta como `true`.
+6. Abrir `/` para validar o painel lendo o Neon.
+7. Se `/api/health` funciona e `/` falha, revisar `DATABASE_URL`, `POSTGRES_SSL`
    e as migrations do Neon.
-6. Se a URL continua com `DEPLOYMENT_NOT_FOUND`, conferir se o projeto existe no
+8. Se a URL continua com `DEPLOYMENT_NOT_FOUND`, conferir se o projeto existe no
    Vercel, se a branch gerou um deployment e se a URL/alias copiada e a mais
    recente.
 

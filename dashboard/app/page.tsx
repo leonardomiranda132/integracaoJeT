@@ -60,15 +60,91 @@ const flowIcons: Record<string, LucideIcon> = {
   reprocess: RefreshCcw,
 };
 
+function getDashboardErrorMessage(error: unknown): string {
+  if (error instanceof Error && /DATABASE_URL|POSTGRES_URL/.test(error.message)) {
+    return "DATABASE_URL ou POSTGRES_URL nao esta configurado no ambiente do Vercel.";
+  }
+
+  if (error instanceof Error && /(localhost|127\.0\.0\.1)/i.test(error.message)) {
+    return "O Vercel esta tentando acessar um banco local. Use a connection string do Neon em DATABASE_URL.";
+  }
+
+  if (error instanceof Error && /(ssl|pg_hba|no encryption)/i.test(error.message)) {
+    return "O Postgres recusou a conexao sem SSL. Confira POSTGRES_SSL=true ou use a connection string do Neon com sslmode=require.";
+  }
+
+  return "O deploy esta no ar, mas a home nao conseguiu consultar o Postgres. Confira DATABASE_URL, POSTGRES_SSL e migrations no Vercel.";
+}
+
+function DashboardUnavailable({ error }: { error: unknown }) {
+  return (
+    <div className="page">
+      <header className="admin-hero">
+        <div>
+          <div className="eyebrow">Painel administrativo</div>
+          <h1>Banco não conectado</h1>
+          <p>{getDashboardErrorMessage(error)}</p>
+        </div>
+
+        <div className="badge-row">
+          <span className="badge badge--warning">
+            <AlertTriangle size={14} />
+            Revisar variaveis no Vercel
+          </span>
+          <a className="button" href="/api/health">
+            <Database size={16} />
+            Ver health check
+          </a>
+        </div>
+      </header>
+
+      <section className="panel">
+        <div className="panel__header">
+          <h2>Checklist rapido</h2>
+          <p>O deploy respondeu, entao a proxima validacao e a conexao com o Neon.</p>
+        </div>
+        <div className="panel__content">
+          <ul className="detail-list">
+            <li>
+              <strong>DATABASE_URL</strong>
+              <span>Usar a connection string do Neon, nunca localhost.</span>
+            </li>
+            <li>
+              <strong>POSTGRES_SSL</strong>
+              <span>Manter como true no Vercel.</span>
+            </li>
+            <li>
+              <strong>Migrations</strong>
+              <span>Rodar o workflow ou `npm run db:migrate` apontando para o Neon.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default async function DashboardPage() {
-  const latestRun = await getLatestRun();
-  const [metrics, flowBlocks, recentRuns, recentIssues, recentReprocess] = await Promise.all([
-    getDashboardMetrics(),
-    getFlowBlocks(latestRun?.id),
-    listRecentRuns(),
-    listIssues(8, "open"),
-    listReprocessRequests(8),
-  ]);
+  let latestRun;
+  let metrics;
+  let flowBlocks;
+  let recentRuns;
+  let recentIssues;
+  let recentReprocess;
+
+  try {
+    latestRun = await getLatestRun();
+    [metrics, flowBlocks, recentRuns, recentIssues, recentReprocess] = await Promise.all([
+      getDashboardMetrics(),
+      getFlowBlocks(latestRun?.id),
+      listRecentRuns(),
+      listIssues(8, "open"),
+      listReprocessRequests(8),
+    ]);
+  } catch (error) {
+    return <DashboardUnavailable error={error} />;
+  }
+
   const orderPageSize = configuredNumber(
     ["TOTVS_ORDER_PAGE_SIZE", "VIRTUAL_AGE_ORDER_PAGE_SIZE"],
     100,
