@@ -5,6 +5,12 @@ Atualizado em: 2026-06-09.
 Este documento descreve a forma recomendada para hospedar a integracao sem custo
 fixo inicial, mantendo painel web, banco duravel e job diario.
 
+Repositorio GitHub usado:
+
+```text
+git@github.com:integracoes-alphabeto/Integra-aoJ-T.git
+```
+
 ## Arquitetura recomendada
 
 ```text

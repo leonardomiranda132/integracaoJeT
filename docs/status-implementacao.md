@@ -376,6 +376,7 @@ Foi validado na pratica:
 - CSV operacional atualizado em `docs/operational-exports/orders-latest.csv` com 161 linhas e sem CPF, telefone ou endereco
 - workflow GitHub Actions diario criado em `.github/workflows/sync-diario-jt.yml`, agendado para 17:00 Sao Paulo e com trava para envio real via variavel `JT_SEND_ENABLED`
 - guia de hospedagem gratuita criado em `docs/hospedagem-gratuita.md` com arquitetura GitHub Actions + Neon Postgres + Netlify/Vercel
+- projeto publicado no GitHub em `integracoes-alphabeto/Integra-aoJ-T`, branch `main`
 
 Arquivos gerados durante os testes:
 
