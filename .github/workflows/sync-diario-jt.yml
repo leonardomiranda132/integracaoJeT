@@ -40,11 +40,6 @@ jobs:
       POSTGRES_POOL_MAX: ${{ vars.POSTGRES_POOL_MAX || '5' }}
       DATABASE_MIGRATIONS_DIR: database/migrations
 
-      # No agendamento, o envio real so liga se a variavel do repositorio
-      # JT_SEND_ENABLED estiver como "true". Execucao manual usa o input.
-      JT_SEND_ENABLED: ${{ github.event_name == 'schedule' && (vars.JT_SEND_ENABLED || 'false') || inputs.send_enabled }}
-      DAILY_SEND_LIMIT: ${{ github.event_name == 'schedule' && vars.DAILY_SEND_LIMIT || inputs.daily_send_limit }}
-
       VIRTUAL_AGE_ENVIRONMENT: ${{ vars.VIRTUAL_AGE_ENVIRONMENT || 'producao' }}
       VIRTUAL_AGE_BASE_URL: ${{ vars.VIRTUAL_AGE_BASE_URL || 'https://www30.bhan.com.br:9443' }}
       VIRTUAL_AGE_AUTH_URL: ${{ vars.VIRTUAL_AGE_AUTH_URL || 'https://www30.bhan.com.br:9443/api/totvsmoda/authorization/v2/token' }}
@@ -92,6 +87,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Configurar modo operacional
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            jt_send_enabled="${{ vars.JT_SEND_ENABLED }}"
+            daily_send_limit="${{ vars.DAILY_SEND_LIMIT }}"
+          else
+            jt_send_enabled="${{ github.event.inputs.send_enabled }}"
+            daily_send_limit="${{ github.event.inputs.daily_send_limit }}"
+          fi
+
+          if [ -z "$jt_send_enabled" ]; then
+            jt_send_enabled="false"
+          fi
+
+          echo "JT_SEND_ENABLED=$jt_send_enabled" >> "$GITHUB_ENV"
+          echo "DAILY_SEND_LIMIT=$daily_send_limit" >> "$GITHUB_ENV"
+          echo "JT_SEND_ENABLED=$jt_send_enabled"
+          echo "DAILY_SEND_LIMIT=${daily_send_limit:-sem limite configurado}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

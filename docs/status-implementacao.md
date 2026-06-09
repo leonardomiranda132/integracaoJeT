@@ -19,6 +19,7 @@ Status operacional neste momento:
 - GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 via `npm run github:actions-config`.
 - O workflow `Sync diario J&T` esta ativo no GitHub.
 - O agendamento automatico esta seguro neste momento: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
+- A primeira execucao remota manual em 2026-06-09 (`runId=27222528597`) falhou como `startup_failure` antes de criar jobs; o workflow foi ajustado para configurar `JT_SEND_ENABLED` e `DAILY_SEND_LIMIT` em um passo shell, reduzindo expressoes no bloco `env`.
 
 Ja foi validado com sucesso:
 

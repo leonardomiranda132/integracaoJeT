@@ -54,6 +54,7 @@ Principais lacunas antes de producao:
 - workflow GitHub Actions diario foi criado em `.github/workflows/sync-diario-jt.yml`, com agendamento as 17:00 Sao Paulo e envio real controlado por `JT_SEND_ENABLED`
 - comando `npm run github:actions-config` foi adicionado para cadastrar GitHub Actions Secrets e Variables a partir do `.env`, usando `gh` autenticado e mantendo `JT_SEND_ENABLED=false` por seguranca no cadastro inicial
 - GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 e conferidas sem expor valores; o estado seguro atual e `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`
+- a primeira execucao remota manual (`runId=27222528597`) falhou como `startup_failure` sem jobs; o workflow foi simplificado para configurar modo operacional em passo shell antes de nova tentativa
 
 ## Principios para entrada em producao
 
