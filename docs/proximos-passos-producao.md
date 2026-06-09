@@ -57,6 +57,7 @@ Principais lacunas antes de producao:
 - a primeira execucao remota manual (`runId=27222528597`) falhou como `startup_failure` sem jobs; o workflow foi simplificado para configurar modo operacional em passo shell antes de nova tentativa
 - a segunda execucao remota manual (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub apontou Billing/limite de gastos como causa, entao o dry-run remoto esta bloqueado ate regularizar `Billing & plans`
 - o projeto foi migrado para `leonardomiranda132/integracaoJeT`; o workflow passou a iniciar, mas a primeira execucao no repo novo (`runId=27223133855`) falhou porque `DATABASE_URL` apontava para `localhost:5432` em vez do Neon
+- apos corrigir a Secret `DATABASE_URL` para Neon, o workflow remoto `runId=27223325769` passou em dry-run: `pagesRead=2`, `ordersRead=126`, `pickupsDryRun=126`, `pickupsSent=0`, `pickupsCreated=0`, `errors=0`
 
 ## Principios para entrada em producao
 
@@ -453,19 +454,17 @@ No-go se:
 
 ## Ordem sugerida de implementacao
 
-1. Corrigir a Secret `DATABASE_URL` do GitHub Actions para apontar para o Neon, nao para o Postgres local.
-2. Rodar novamente o workflow GitHub Actions manual em dry-run (`send_enabled=false`) para validar Neon, migrations, TOTVS, exportacao e painel remoto sem enviar para a J&T.
-3. Conferir o artifact `orders-latest` e o `db:inspect` do workflow.
-4. Conferir o lote real de 2026-06-08 com 161 `billCode` criados na J&T.
-5. Publicar o painel em Netlify ou Vercel apontando para o Neon.
-6. Adicionar autenticacao ou protecao por senha no painel antes de uso operacional.
-7. Colocar a interface operacional no fluxo diario de conferencia.
-8. Testar o reprocessamento em dry-run pela interface quando surgir pendencia real.
-9. Confirmar com a operacao se o proximo envio real sera assistido ou cron definitivo.
-10. Se ainda houver inseguranca operacional, manter `JT_SEND_ENABLED=false` no agendamento e usar `Run workflow` manual com limite.
-11. Para piloto automatico limitado, configurar `JT_SEND_ENABLED=true` e manter `DAILY_SEND_LIMIT=10`.
-12. Para rotina definitiva, remover `DAILY_SEND_LIMIT` somente depois de alguns ciclos estaveis e conferidos.
-13. Ajustar elegibilidade/reprocessamento conforme divergencias do piloto.
+1. Conferir o artifact `orders-latest` do dry-run remoto `27223325769` com a operacao.
+2. Conferir o lote real de 2026-06-08 com 161 `billCode` criados na J&T.
+3. Publicar o painel em Netlify ou Vercel apontando para o Neon.
+4. Adicionar autenticacao ou protecao por senha no painel antes de uso operacional.
+5. Colocar a interface operacional no fluxo diario de conferencia.
+6. Testar o reprocessamento em dry-run pela interface quando surgir pendencia real.
+7. Confirmar com a operacao se o proximo envio real sera assistido ou cron definitivo.
+8. Se ainda houver inseguranca operacional, manter `JT_SEND_ENABLED=false` no agendamento e usar `Run workflow` manual com limite.
+9. Para piloto automatico limitado, configurar `JT_SEND_ENABLED=true` e manter `DAILY_SEND_LIMIT=10`.
+10. Para rotina definitiva, remover `DAILY_SEND_LIMIT` somente depois de alguns ciclos estaveis e conferidos.
+11. Ajustar elegibilidade/reprocessamento conforme divergencias do piloto.
 
 ## Resultado esperado
 

@@ -22,6 +22,9 @@ Status operacional neste momento:
 - A primeira execucao remota manual em 2026-06-09 (`runId=27222528597`) falhou como `startup_failure` antes de criar jobs; o workflow foi ajustado para configurar `JT_SEND_ENABLED` e `DAILY_SEND_LIMIT` em um passo shell, reduzindo expressoes no bloco `env`.
 - A segunda execucao remota manual em 2026-06-09 (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub informou que o job nao iniciou por pagamento recente com falha ou necessidade de aumentar o limite de gastos em `Billing & plans`.
 - Apos migracao para `leonardomiranda132/integracaoJeT`, o workflow iniciou corretamente, mas a primeira tentativa (`runId=27223133855`) falhou em `db:migrate` porque `DATABASE_URL` foi cadastrado a partir do `.env` local e apontava para `localhost:5432`.
+- A Secret `DATABASE_URL` do novo repositorio foi corrigida para Neon e o dry-run remoto `runId=27223325769` passou com sucesso em 2026-06-09.
+- Resultado do dry-run remoto no GitHub Actions: `pagesRead=2`, `ordersRead=126`, `pickupsDryRun=126`, `pickupsSent=0`, `pickupsCreated=0`, `errors=0`.
+- O artifact `orders-latest` foi publicado com 126 linhas de pedidos e sem CPF, telefone ou endereco.
 
 Ja foi validado com sucesso:
 
@@ -55,8 +58,9 @@ Ja foi validado com sucesso:
 - reserva anti-duplicidade em `pickup_requests.txlogistic_id` adicionada antes da chamada real J&T
 - painel redesenhado com fluxo operacional conectado e formulario direto para reprocessar pedido por filial/pedido
 - GitHub Actions Secrets e Variables cadastradas e conferidas sem expor valores; `POSTGRES_SSL` foi corrigido para `true` por causa do Neon e `JT_SEND_ENABLED` foi confirmado como `false`
-- bloqueio de Billing foi contornado com a migracao para `leonardomiranda132/integracaoJeT`; o bloqueio atual do dry-run remoto e corrigir `DATABASE_URL` para Neon
+- bloqueio de Billing foi contornado com a migracao para `leonardomiranda132/integracaoJeT`; o erro posterior de `DATABASE_URL=localhost` tambem foi corrigido no GitHub Actions
 - helper `npm run github:actions-config` endurecido para bloquear cadastro de `DATABASE_URL` local no GitHub Actions; usar `GITHUB_ACTIONS_DATABASE_URL` para passar a URL Neon
+- workflow remoto em `leonardomiranda132/integracaoJeT` validado em dry-run com Neon, migrations, sync, `db:inspect`, exportacao CSV e upload de artifact
 
 Pedido validado com sucesso na J&T:
 
@@ -387,6 +391,7 @@ Foi validado na pratica:
 - workflow GitHub Actions diario criado em `.github/workflows/sync-diario-jt.yml`, agendado para 17:00 Sao Paulo e com trava para envio real via variavel `JT_SEND_ENABLED`
 - guia de hospedagem gratuita criado em `docs/hospedagem-gratuita.md` com arquitetura GitHub Actions + Neon Postgres + Netlify/Vercel
 - projeto migrado para o GitHub em `leonardomiranda132/integracaoJeT`, branch `main`
+- workflow GitHub Actions validado no novo repositorio em dry-run remoto (`runId=27223325769`)
 
 Arquivos gerados durante os testes:
 

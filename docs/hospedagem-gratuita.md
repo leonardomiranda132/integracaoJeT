@@ -250,8 +250,9 @@ O CSV final fica como artifact `orders-latest`.
 - Secrets e Variables conferidas com `npm run github:actions-config -- --dry-run`.
 - Em 2026-06-09, Secrets e Variables foram cadastradas no GitHub com sucesso.
 - Estado seguro confirmado: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
-- Em 2026-06-09, a validacao remota ficou bloqueada por `startup_failure` causado por Billing/limite de gastos do GitHub. Resolver em `Billing & plans` antes de tentar novo dry-run remoto.
-- Aguardando: primeiro `Run workflow` manual com `send_enabled=false` passar sem erro.
+- Em 2026-06-09, a validacao remota no repositorio antigo ficou bloqueada por `startup_failure` causado por Billing/limite de gastos do GitHub.
+- O repositorio foi migrado para `leonardomiranda132/integracaoJeT`, removendo o bloqueio de Billing anterior.
+- Em 2026-06-09, o `Run workflow` manual com `send_enabled=false` passou sem erro no novo repositorio (`runId=27223325769`).
 - Painel consegue ler o banco Neon.
 - Operacao conferiu o CSV do dry-run.
 - So depois disso mudar `JT_SEND_ENABLED=true`.
