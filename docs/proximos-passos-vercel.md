@@ -47,6 +47,8 @@ DATABASE_URL=<connection string do Neon>
 POSTGRES_SSL=true
 POSTGRES_SSL_REJECT_UNAUTHORIZED=true
 POSTGRES_POOL_MAX=5
+OPERATIONS_ACTION_TOKEN=<senha operacional forte>
+GITHUB_WORKFLOW_DISPATCH_TOKEN=<token GitHub com permissao de workflow dispatch>
 ```
 
 Nao usar `DATABASE_URL` apontando para `localhost`, porque o Vercel nao consegue
@@ -55,6 +57,14 @@ acessar o banco local da maquina.
 Observacao: o codigo assume SSL no runtime do Vercel para proteger o caso mais
 comum com Neon. So desabilitar SSL no Vercel em uma excecao controlada usando
 `POSTGRES_SSL_FORCE_DISABLE=true`.
+
+Para os botoes operacionais do dashboard:
+
+- `OPERATIONS_ACTION_TOKEN` protege limpeza de banco e envio real.
+- `GITHUB_WORKFLOW_DISPATCH_TOKEN` e usado apenas no servidor para disparar
+  `.github/workflows/sync-diario-jt.yml` com `send_enabled=true`.
+- O token operacional deve ficar fora do Git; se for salvo localmente, manter em
+  arquivo ignorado, como `.operations-token`.
 
 ## Como validar depois do deploy
 
@@ -67,7 +77,9 @@ comum com Neon. So desabilitar SSL no Vercel em uma excecao controlada usando
 7. Abrir `/` para validar o painel lendo o Neon.
 8. Se `/api/health` funciona e `/` falha, revisar `DATABASE_URL`, `POSTGRES_SSL`
    e as migrations do Neon.
-9. Se a URL continua com `DEPLOYMENT_NOT_FOUND`, conferir se o projeto existe no
+9. Confirmar que o painel exibe o cronometro e que os botoes pedem senha
+   operacional antes de qualquer acao real.
+10. Se a URL continua com `DEPLOYMENT_NOT_FOUND`, conferir se o projeto existe no
    Vercel, se a branch gerou um deployment e se a URL/alias copiada e a mais
    recente.
 

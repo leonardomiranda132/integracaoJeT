@@ -15,7 +15,9 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { QuickReprocessForm } from "../components/quick-reprocess-form";
+import { OperationsControlPanel } from "../components/operations-control-panel";
 import { formatDateTime, formatNumber } from "../lib/format";
+import { getNextDailyRunAt } from "../lib/server/schedule";
 import { getDashboardMetrics, getFlowBlocks, getLatestRun, listRecentRuns, listIssues, listReprocessRequests } from "../lib/server/queries";
 
 export const dynamic = "force-dynamic";
@@ -125,6 +127,8 @@ function DashboardUnavailable({ error }: { error: unknown }) {
 }
 
 export default async function DashboardPage() {
+  const actionsUrl = `https://github.com/${process.env.VERCEL_GIT_REPO_OWNER || "leonardomiranda132"}/${process.env.VERCEL_GIT_REPO_SLUG || "integracaoJeT"}/actions/workflows/sync-diario-jt.yml`;
+
   let latestRun;
   let metrics;
   let flowBlocks;
@@ -184,6 +188,8 @@ export default async function DashboardPage() {
           </a>
         </div>
       </header>
+
+      <OperationsControlPanel actionsUrl={actionsUrl} nextRunAt={getNextDailyRunAt()} />
 
       <section className="metrics-grid">
         <div className={metricToneClass("default")}>
