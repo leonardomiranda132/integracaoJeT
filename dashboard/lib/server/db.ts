@@ -2,13 +2,66 @@ import pg from "pg";
 
 const { Pool } = pg;
 
+type ConnectionStringSource = "DATABASE_URL" | "POSTGRES_URL";
+type ConnectionStringKind = "local" | "remote" | "invalid";
+
 declare global {
   // eslint-disable-next-line no-var
   var __operationsDashboardPool: pg.Pool | undefined;
 }
 
+function classifyConnectionString(value: string): ConnectionStringKind {
+  try {
+    const hostname = new URL(value).hostname;
+    return hostname === "localhost" || hostname === "127.0.0.1" ? "local" : "remote";
+  } catch {
+    return "invalid";
+  }
+}
+
+export function getDatabaseConnectionInfo(): {
+  configured: boolean;
+  kind: ConnectionStringKind | "unset";
+  source: ConnectionStringSource | null;
+} {
+  const candidates = [
+    { source: "DATABASE_URL" as const, value: process.env.DATABASE_URL },
+    { source: "POSTGRES_URL" as const, value: process.env.POSTGRES_URL },
+  ]
+    .filter((candidate): candidate is { source: ConnectionStringSource; value: string } =>
+      Boolean(candidate.value),
+    )
+    .map((candidate) => ({
+      ...candidate,
+      kind: classifyConnectionString(candidate.value),
+    }));
+
+  if (candidates.length === 0) {
+    return {
+      configured: false,
+      kind: "unset",
+      source: null,
+    };
+  }
+
+  const remoteCandidate = candidates.find((candidate) => candidate.kind === "remote");
+  const selected = isVercelRuntime() && remoteCandidate ? remoteCandidate : candidates[0];
+
+  return {
+    configured: true,
+    kind: selected.kind,
+    source: selected.source,
+  };
+}
+
 function getConnectionString(): string {
-  const connectionString = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+  const info = getDatabaseConnectionInfo();
+  const connectionString =
+    info.source === "DATABASE_URL"
+      ? process.env.DATABASE_URL
+      : info.source === "POSTGRES_URL"
+        ? process.env.POSTGRES_URL
+        : undefined;
 
   if (!connectionString) {
     throw new Error("Configure DATABASE_URL ou POSTGRES_URL para usar a interface.");

@@ -21,6 +21,8 @@ operacional no Vercel puxando do GitHub.
   depender da conexao com o Postgres.
 - O painel agora assume SSL automaticamente quando roda no Vercel e a home
   mostra uma tela de diagnostico em vez de erro 500 cru se o Postgres falhar.
+- Em runtime Vercel, se `DATABASE_URL` estiver local mas `POSTGRES_URL` estiver
+  remoto, o painel passa a preferir `POSTGRES_URL`.
 
 ## Configuracao recomendada no Vercel
 
@@ -60,11 +62,12 @@ comum com Neon. So desabilitar SSL no Vercel em uma excecao controlada usando
 2. Confirmar que a resposta tem `status: "ok"`.
 3. Confirmar que `databaseConfigured` esta como `true`.
 4. Confirmar que `databaseUrlKind` esta como `remote`, nao `local`.
-5. Confirmar que `postgresSsl` esta como `true`.
-6. Abrir `/` para validar o painel lendo o Neon.
-7. Se `/api/health` funciona e `/` falha, revisar `DATABASE_URL`, `POSTGRES_SSL`
+5. Confirmar que `selectedDatabaseSource` e a variavel remota correta.
+6. Confirmar que `postgresSsl` esta como `true`.
+7. Abrir `/` para validar o painel lendo o Neon.
+8. Se `/api/health` funciona e `/` falha, revisar `DATABASE_URL`, `POSTGRES_SSL`
    e as migrations do Neon.
-8. Se a URL continua com `DEPLOYMENT_NOT_FOUND`, conferir se o projeto existe no
+9. Se a URL continua com `DEPLOYMENT_NOT_FOUND`, conferir se o projeto existe no
    Vercel, se a branch gerou um deployment e se a URL/alias copiada e a mais
    recente.
 
