@@ -55,6 +55,7 @@ Principais lacunas antes de producao:
 - comando `npm run github:actions-config` foi adicionado para cadastrar GitHub Actions Secrets e Variables a partir do `.env`, usando `gh` autenticado e mantendo `JT_SEND_ENABLED=false` por seguranca no cadastro inicial
 - GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 e conferidas sem expor valores; o estado seguro atual e `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`
 - a primeira execucao remota manual (`runId=27222528597`) falhou como `startup_failure` sem jobs; o workflow foi simplificado para configurar modo operacional em passo shell antes de nova tentativa
+- a segunda execucao remota manual (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub apontou Billing/limite de gastos como causa, entao o dry-run remoto esta bloqueado ate regularizar `Billing & plans`
 
 ## Principios para entrada em producao
 
@@ -451,18 +452,19 @@ No-go se:
 
 ## Ordem sugerida de implementacao
 
-1. Rodar o workflow GitHub Actions manual em dry-run (`send_enabled=false`) para validar Neon, migrations, TOTVS, exportacao e painel remoto sem enviar para a J&T.
-2. Conferir o artifact `orders-latest` e o `db:inspect` do workflow.
-3. Conferir o lote real de 2026-06-08 com 161 `billCode` criados na J&T.
-4. Publicar o painel em Netlify ou Vercel apontando para o Neon.
-5. Adicionar autenticacao ou protecao por senha no painel antes de uso operacional.
-6. Colocar a interface operacional no fluxo diario de conferencia.
-7. Testar o reprocessamento em dry-run pela interface quando surgir pendencia real.
-8. Confirmar com a operacao se o proximo envio real sera assistido ou cron definitivo.
-9. Se ainda houver inseguranca operacional, manter `JT_SEND_ENABLED=false` no agendamento e usar `Run workflow` manual com limite.
-10. Para piloto automatico limitado, configurar `JT_SEND_ENABLED=true` e manter `DAILY_SEND_LIMIT=10`.
-11. Para rotina definitiva, remover `DAILY_SEND_LIMIT` somente depois de alguns ciclos estaveis e conferidos.
-12. Ajustar elegibilidade/reprocessamento conforme divergencias do piloto.
+1. Resolver o bloqueio de Billing/limite de gastos no GitHub em `Billing & plans` da conta/organizacao.
+2. Rodar novamente o workflow GitHub Actions manual em dry-run (`send_enabled=false`) para validar Neon, migrations, TOTVS, exportacao e painel remoto sem enviar para a J&T.
+3. Conferir o artifact `orders-latest` e o `db:inspect` do workflow.
+4. Conferir o lote real de 2026-06-08 com 161 `billCode` criados na J&T.
+5. Publicar o painel em Netlify ou Vercel apontando para o Neon.
+6. Adicionar autenticacao ou protecao por senha no painel antes de uso operacional.
+7. Colocar a interface operacional no fluxo diario de conferencia.
+8. Testar o reprocessamento em dry-run pela interface quando surgir pendencia real.
+9. Confirmar com a operacao se o proximo envio real sera assistido ou cron definitivo.
+10. Se ainda houver inseguranca operacional, manter `JT_SEND_ENABLED=false` no agendamento e usar `Run workflow` manual com limite.
+11. Para piloto automatico limitado, configurar `JT_SEND_ENABLED=true` e manter `DAILY_SEND_LIMIT=10`.
+12. Para rotina definitiva, remover `DAILY_SEND_LIMIT` somente depois de alguns ciclos estaveis e conferidos.
+13. Ajustar elegibilidade/reprocessamento conforme divergencias do piloto.
 
 ## Resultado esperado
 
