@@ -201,10 +201,10 @@ Durante piloto dry-run:
 cd /caminho/do/projeto && JT_SEND_ENABLED=false npm run sync:daily
 ```
 
-Durante piloto com envio limitado:
+Durante envio real assistido:
 
 ```bash
-cd /caminho/do/projeto && JT_SEND_ENABLED=true DAILY_SEND_LIMIT=10 npm run sync:daily
+cd /caminho/do/projeto && JT_SEND_ENABLED=true DAILY_SEND_LIMIT= npm run sync:daily
 ```
 
 ## Workflows manuais recomendados
@@ -280,5 +280,7 @@ em dry-run e nao use `--send`.
 7. Adicionar notificacao de falha e pendencias abertas.
 8. Rodar alguns ciclos acompanhados em dry-run.
 9. Aguardar confirmacao da transportadora antes de qualquer fluxo com envio real.
-10. So trocar para envio limitado com `DAILY_SEND_LIMIT` apos aprovacao operacional.
-8. So trocar para envio limitado com `DAILY_SEND_LIMIT` apos aprovacao da transportadora.
+10. So trocar para envio real apos aprovacao operacional; usar
+    `DAILY_SEND_LIMIT=N` apenas se for necessario retomar um piloto limitado.
+8. So trocar para envio real apos aprovacao da transportadora; usar
+   `DAILY_SEND_LIMIT=N` apenas se for necessario retomar um piloto limitado.

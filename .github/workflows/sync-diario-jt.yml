@@ -14,7 +14,7 @@ on:
       daily_send_limit:
         description: "Limite de envios reais. Use vazio para enviar todos."
         required: false
-        default: "10"
+        default: ""
 
 concurrency:
   group: sync-diario-jt

@@ -74,7 +74,7 @@ gh variable set POSTGRES_SSL --repo leonardomiranda132/integracaoJeT --body true
 Rodar o workflow manual em dry-run, sem envio para a J&T:
 
 ```bash
-gh workflow run sync-diario-jt.yml --repo leonardomiranda132/integracaoJeT --field send_enabled=false --field daily_send_limit=10
+gh workflow run sync-diario-jt.yml --repo leonardomiranda132/integracaoJeT --field send_enabled=false --field daily_send_limit=
 ```
 
 Ver execucoes recentes:
@@ -243,16 +243,17 @@ Executar o sync em dry-run operacional, sem chamar `addOrder` na J&T:
 JT_SEND_ENABLED=false npm run sync:daily
 ```
 
-Executar piloto com envio real limitado:
+Executar envio real de todos os pedidos elegiveis:
 
 ```bash
-JT_SEND_ENABLED=true DAILY_SEND_LIMIT=10 npm run sync:daily
+JT_SEND_ENABLED=true DAILY_SEND_LIMIT= npm run sync:daily
 ```
 
 Observacao:
 
 - este fluxo busca pedidos no TOTVS, enriquece telefone na `person` e tenta criar pedido real na J&T
 - com `JT_SEND_ENABLED=false`, ele monta e valida o payload, mas nao envia para a J&T
+- com `DAILY_SEND_LIMIT=N`, ele limita o envio real a `N` pedidos
 - com `DAILY_SEND_LIMIT=0`, envios reais ficam bloqueados
 - duas execucoes da mesma janela nao devem rodar ao mesmo tempo por causa da trava `execution_locks`
 - no smoke de 2026-06-03, `BillingReleased` retornou zero pedidos JET e a janela de 30 dias sem status retornou pedidos com `statusOrder=Attended`; por decisao operacional, o filtro padrao passou a ser `Attended`
@@ -454,10 +455,10 @@ Proximos passos da tela `/steps`:
 JT_SEND_ENABLED=false SYNC_START_DATE=2026-05-04 SYNC_END_DATE=2026-06-03 npm run sync:window
 ```
 
-7. Se o payload estiver correto e a operacao estiver acompanhando, envie com limite:
+7. Se o payload estiver correto e a operacao estiver acompanhando, envie sem limite:
 
 ```bash
-JT_SEND_ENABLED=true DAILY_SEND_LIMIT=10 npm run sync:daily
+JT_SEND_ENABLED=true DAILY_SEND_LIMIT= npm run sync:daily
 ```
 
 8. Para envio manual de um pedido especifico, use:

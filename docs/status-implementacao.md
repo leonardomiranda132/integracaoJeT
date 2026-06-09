@@ -20,8 +20,11 @@ Status operacional neste momento:
 - O workflow `Sync diario J&T` esta ativo no GitHub para execucao por dispatch.
 - O agendamento automatico principal passou a ser Vercel Cron em 2026-06-09,
   chamando `/api/cron/daily-real-sync` as 20:00 UTC, equivalente a 17:00 em Sao Paulo.
-- O envio automatico do Vercel Cron dispara o workflow com `send_enabled=true`
-  e respeita `DAILY_SEND_LIMIT` do ambiente Vercel.
+- O envio automatico do Vercel Cron dispara o workflow com `send_enabled=true`;
+  sem `DAILY_SEND_LIMIT` no Vercel, envia todos os pedidos elegiveis.
+- Em 2026-06-09 o limite padrao de 10 envios foi removido do painel, do
+  workflow, do Vercel e das Variables do GitHub; o token operacional tambem foi
+  rotacionado porque o valor anterior ficou exposto durante a operacao.
 - A primeira execucao remota manual em 2026-06-09 (`runId=27222528597`) falhou como `startup_failure` antes de criar jobs; o workflow foi ajustado para configurar `JT_SEND_ENABLED` e `DAILY_SEND_LIMIT` em um passo shell, reduzindo expressoes no bloco `env`.
 - A segunda execucao remota manual em 2026-06-09 (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub informou que o job nao iniciou por pagamento recente com falha ou necessidade de aumentar o limite de gastos em `Billing & plans`.
 - Apos migracao para `leonardomiranda132/integracaoJeT`, o workflow iniciou corretamente, mas a primeira tentativa (`runId=27223133855`) falhou em `db:migrate` porque `DATABASE_URL` foi cadastrado a partir do `.env` local e apontava para `localhost:5432`.
@@ -44,7 +47,7 @@ Ja foi validado com sucesso:
 - trava de execucao implementada
 - mascaramento de logs e contextos de erro implementado
 - timeout, retry e classificacao de erro HTTP implementados
-- modo dry-run operacional e limite de envio implementados
+- modo dry-run operacional e limite opcional de envio implementados
 - filtro operacional de pedidos ajustado para `Attended`
 - diagnostico de elegibilidade com motivos no log do pedido e resumo agregado no lote
 - filtro defensivo local por `shippingCompanyCode=88442` aplicado apos a API retornar pedidos fora do codigo configurado
@@ -169,7 +172,8 @@ O que ja faz:
 - Gera `bizContent` para dry-run.
 - Envia `addOrder` para a J&T.
 - No sync operacional, respeita `JT_SEND_ENABLED=false` para validar sem chamar `addOrder`.
-- No sync operacional, respeita `DAILY_SEND_LIMIT` para piloto com limite de envios reais.
+- No sync operacional, `DAILY_SEND_LIMIT` e opcional; vazio/ausente envia todos
+  os pedidos elegiveis e `DAILY_SEND_LIMIT=N` limita o piloto quando necessario.
 
 O que foi confirmado na pratica:
 
@@ -421,7 +425,8 @@ Detalhamento operacional: [docs/proximos-passos-producao.md](/Users/leonardomira
 4. Criar/publicar o repositorio no GitHub e cadastrar os Secrets/Variables do workflow.
 5. Criar banco Neon e apontar `DATABASE_URL` para ele.
 6. Adicionar autenticacao interna e auditoria de acoes da interface.
-7. Manter `DAILY_SEND_LIMIT` definido no Vercel enquanto o cron definitivo nao for aprovado.
+7. Se a operacao quiser voltar a limitar o piloto, recriar `DAILY_SEND_LIMIT`
+   no Vercel com o valor desejado.
 8. Implementar consulta/cancelamento/etiqueta/rastreio na J&T.
 
 ## Como manter este arquivo atualizado

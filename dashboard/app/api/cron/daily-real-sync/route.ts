@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       await dispatchRealSyncWorkflow({
-        dailySendLimit: process.env.CRON_DAILY_SEND_LIMIT ?? process.env.DAILY_SEND_LIMIT ?? "10",
+        dailySendLimit: process.env.CRON_DAILY_SEND_LIMIT ?? process.env.DAILY_SEND_LIMIT ?? "",
         dryRun,
       }),
     );

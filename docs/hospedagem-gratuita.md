@@ -58,7 +58,8 @@ O workflow roda:
 - manualmente pelo botao `Run workflow`
 
 No disparo automatico do Vercel Cron, o painel chama o workflow com
-`send_enabled=true` e usa `DAILY_SEND_LIMIT` do ambiente Vercel como limite.
+`send_enabled=true`. Se `DAILY_SEND_LIMIT` nao existir no Vercel, envia todos os
+pedidos elegiveis.
 
 ### Painel
 
@@ -168,7 +169,7 @@ Minimas recomendadas:
 
 ```text
 JT_SEND_ENABLED=false
-DAILY_SEND_LIMIT=10
+DAILY_SEND_LIMIT=
 POSTGRES_SSL=true
 POSTGRES_SSL_REJECT_UNAUTHORIZED=true
 POSTGRES_POOL_MAX=5
@@ -214,7 +215,7 @@ Configuracao inicial segura:
 
 ```text
 JT_SEND_ENABLED=false
-DAILY_SEND_LIMIT=10
+DAILY_SEND_LIMIT=
 ```
 
 Com isso, o agendamento diario roda em dry-run.
@@ -223,14 +224,14 @@ Para ligar envio real limitado:
 
 ```text
 JT_SEND_ENABLED=true
-DAILY_SEND_LIMIT=10
+DAILY_SEND_LIMIT=N
 ```
 
 Para ligar envio real de todos os pedidos elegiveis:
 
 ```text
 JT_SEND_ENABLED=true
-DAILY_SEND_LIMIT nao cadastrado
+DAILY_SEND_LIMIT nao cadastrado ou vazio
 ```
 
 No GitHub, para enviar todos no agendamento automatico, remova a variable
@@ -246,7 +247,7 @@ depois de validar no painel e no `db:inspect`.
 5. Escolher:
    - `send_enabled=false` para dry-run
    - `send_enabled=true` para envio real
-   - `daily_send_limit=10` para piloto
+   - `daily_send_limit=N` somente se quiser limitar o piloto
    - `daily_send_limit=` vazio para todos
 
 O workflow sempre roda:
@@ -266,7 +267,7 @@ O CSV final fica como artifact `orders-latest`.
 - `DATABASE_URL` esta em Secret, nunca no codigo.
 - Secrets e Variables conferidas com `npm run github:actions-config -- --dry-run`.
 - Em 2026-06-09, Secrets e Variables foram cadastradas no GitHub com sucesso.
-- Estado seguro confirmado: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
+- Estado seguro confirmado: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT` vazio/ausente e `POSTGRES_SSL=true`.
 - Em 2026-06-09, a validacao remota no repositorio antigo ficou bloqueada por `startup_failure` causado por Billing/limite de gastos do GitHub.
 - O repositorio foi migrado para `leonardomiranda132/integracaoJeT`, removendo o bloqueio de Billing anterior.
 - Em 2026-06-09, o `Run workflow` manual com `send_enabled=false` passou sem erro no novo repositorio (`runId=27223325769`).

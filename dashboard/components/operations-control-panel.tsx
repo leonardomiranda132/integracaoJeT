@@ -64,8 +64,8 @@ export function OperationsControlPanel({ actionsUrl, nextRunAt }: OperationsCont
   const [actionToken, setActionToken] = useState("");
   const [realConfirmation, setRealConfirmation] = useState("");
   const [cleanupConfirmation, setCleanupConfirmation] = useState("");
-  const [dailySendLimit, setDailySendLimit] = useState("10");
-  const [sendAll, setSendAll] = useState(false);
+  const [dailySendLimit, setDailySendLimit] = useState("");
+  const [sendAll, setSendAll] = useState(true);
   const [runningAction, setRunningAction] = useState<"real-sync" | "cleanup" | null>(null);
   const [feedback, setFeedback] = useState<ActionResponse | null>(null);
 

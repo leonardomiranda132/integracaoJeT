@@ -223,8 +223,8 @@ Em 2026-06-03 foram validados:
 
 1. validar o primeiro clique de envio real pelo painel acompanhando o workflow
    no GitHub Actions
-2. conferir com a operacao se o limite padrao de 10 envios reais continua
-   adequado para piloto
+2. conferir com a operacao o primeiro lote sem limite depois do cron automatico
+   rodar
 3. adicionar autenticacao interna antes de ampliar uso para mais pessoas
 4. comparar o novo visual com a rotina real da operacao no dia a dia
 5. ajustar nomenclaturas e ordem dos modulos depois do primeiro uso assistido

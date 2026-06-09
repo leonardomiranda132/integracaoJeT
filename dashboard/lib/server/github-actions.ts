@@ -1,6 +1,6 @@
 function normalizeLimit(value: unknown): string {
   if (value === null || value === undefined) {
-    return "10";
+    return "";
   }
 
   const text = String(value).trim();

@@ -67,6 +67,12 @@ Para os botoes operacionais do dashboard:
 - `CRON_SECRET` protege `/api/cron/daily-real-sync`.
 - O envio automatico das 17:00 e registrado em `vercel.json` como Vercel Cron
   `0 20 * * *`, porque o cron usa UTC.
+- Sem `DAILY_SEND_LIMIT` no Vercel, o cron automatico e o botao manual enviam
+  todos os pedidos elegiveis.
+- Em 2026-06-09 o `DAILY_SEND_LIMIT` foi removido do Vercel e das Variables do
+  GitHub para liberar envio de todos os pedidos elegiveis nos disparos reais.
+- Se o `OPERATIONS_ACTION_TOKEN` aparecer em chat, print ou log, rotacionar no
+  Vercel e atualizar o arquivo local ignorado `.operations-token`.
 - `JT_SEND_ENABLED` nao e necessario no Vercel para o botao manual nem para o
   Vercel Cron; ambos enviam `send_enabled=true` no disparo do workflow.
 - O token operacional deve ficar fora do Git; se for salvo localmente, manter em
