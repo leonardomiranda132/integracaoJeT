@@ -181,6 +181,9 @@ Passos disponiveis:
 - botoes destrutivos ou reais exigem `OPERATIONS_ACTION_TOKEN`
 - envio real pelo painel dispara o workflow `sync-diario-jt.yml` com
   `send_enabled=true`, nao roda o lote dentro da funcao web
+- o badge do topo do dashboard indica se o envio real assistido pelo painel esta
+  liberado; ele depende de `OPERATIONS_ACTION_TOKEN` e
+  `GITHUB_WORKFLOW_DISPATCH_TOKEN` no Vercel, nao de `JT_SEND_ENABLED`
 - limpeza pelo painel apaga somente tabelas operacionais e preserva schema e
   migrations
 

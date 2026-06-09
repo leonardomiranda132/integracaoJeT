@@ -128,6 +128,9 @@ function DashboardUnavailable({ error }: { error: unknown }) {
 
 export default async function DashboardPage() {
   const actionsUrl = `https://github.com/${process.env.VERCEL_GIT_REPO_OWNER || "leonardomiranda132"}/${process.env.VERCEL_GIT_REPO_SLUG || "integracaoJeT"}/actions/workflows/sync-diario-jt.yml`;
+  const realSyncActionEnabled = Boolean(
+    process.env.OPERATIONS_ACTION_TOKEN && process.env.GITHUB_WORKFLOW_DISPATCH_TOKEN,
+  );
 
   let latestRun;
   let metrics;
@@ -174,9 +177,11 @@ export default async function DashboardPage() {
         </div>
 
         <div className="badge-row">
-          <span className="badge badge--warning">
-            <AlertTriangle size={14} />
-            Envio real continua bloqueado
+          <span className={realSyncActionEnabled ? "badge badge--success" : "badge badge--warning"}>
+            {realSyncActionEnabled ? <ShieldCheck size={14} /> : <AlertTriangle size={14} />}
+            {realSyncActionEnabled
+              ? "Envio real assistido liberado"
+              : "Envio real exige configuracao"}
           </span>
           <span className="badge">
             <Route size={14} />

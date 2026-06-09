@@ -243,6 +243,12 @@ pre {
   background: #fff8e9;
 }
 
+.badge--success {
+  border-color: rgba(18, 128, 92, 0.22);
+  color: var(--success);
+  background: #eefbf3;
+}
+
 .metrics-grid,
 .panel-grid,
 .details-grid {

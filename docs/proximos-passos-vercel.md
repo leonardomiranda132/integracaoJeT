@@ -63,6 +63,9 @@ Para os botoes operacionais do dashboard:
 - `OPERATIONS_ACTION_TOKEN` protege limpeza de banco e envio real.
 - `GITHUB_WORKFLOW_DISPATCH_TOKEN` e usado apenas no servidor para disparar
   `.github/workflows/sync-diario-jt.yml` com `send_enabled=true`.
+- `JT_SEND_ENABLED` continua sendo variavel do GitHub Actions para o agendamento
+  automatico. O botao manual do painel nao precisa de `JT_SEND_ENABLED` no
+  Vercel, porque envia `send_enabled=true` no disparo do workflow.
 - O token operacional deve ficar fora do Git; se for salvo localmente, manter em
   arquivo ignorado, como `.operations-token`.
 
