@@ -1,0 +1,2 @@
+ALTER TABLE sync_runs
+  ADD COLUMN IF NOT EXISTS pages_read integer NOT NULL DEFAULT 0;

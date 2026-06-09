@@ -1,0 +1,128 @@
+name: Sync diario J&T
+
+on:
+  schedule:
+    # 17:00 em America/Sao_Paulo. O cron do GitHub usa UTC.
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+    inputs:
+      send_enabled:
+        description: "Enviar pedidos reais para a J&T?"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      daily_send_limit:
+        description: "Limite de envios reais. Use vazio para enviar todos."
+        required: false
+        default: "10"
+
+concurrency:
+  group: sync-diario-jt
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Rodar integracao diaria
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      APP_ENV: production
+      APP_TIMEZONE: America/Sao_Paulo
+      APP_LOG_LEVEL: info
+      PERSISTENCE_ADAPTER: postgres
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      POSTGRES_SSL: ${{ vars.POSTGRES_SSL || 'true' }}
+      POSTGRES_SSL_REJECT_UNAUTHORIZED: ${{ vars.POSTGRES_SSL_REJECT_UNAUTHORIZED || 'true' }}
+      POSTGRES_POOL_MAX: ${{ vars.POSTGRES_POOL_MAX || '5' }}
+      DATABASE_MIGRATIONS_DIR: database/migrations
+
+      # No agendamento, o envio real so liga se a variavel do repositorio
+      # JT_SEND_ENABLED estiver como "true". Execucao manual usa o input.
+      JT_SEND_ENABLED: ${{ github.event_name == 'schedule' && (vars.JT_SEND_ENABLED || 'false') || inputs.send_enabled }}
+      DAILY_SEND_LIMIT: ${{ github.event_name == 'schedule' && vars.DAILY_SEND_LIMIT || inputs.daily_send_limit }}
+
+      VIRTUAL_AGE_ENVIRONMENT: ${{ vars.VIRTUAL_AGE_ENVIRONMENT || 'producao' }}
+      VIRTUAL_AGE_BASE_URL: ${{ vars.VIRTUAL_AGE_BASE_URL || 'https://www30.bhan.com.br:9443' }}
+      VIRTUAL_AGE_AUTH_URL: ${{ vars.VIRTUAL_AGE_AUTH_URL || 'https://www30.bhan.com.br:9443/api/totvsmoda/authorization/v2/token' }}
+      VIRTUAL_AGE_SALES_ORDER_BASE_URL: ${{ vars.VIRTUAL_AGE_SALES_ORDER_BASE_URL || 'https://www30.bhan.com.br:9443/api/totvsmoda/sales-order/v2' }}
+      VIRTUAL_AGE_CLIENT_ID: ${{ secrets.VIRTUAL_AGE_CLIENT_ID }}
+      VIRTUAL_AGE_CLIENT_SECRET: ${{ secrets.VIRTUAL_AGE_CLIENT_SECRET }}
+      VIRTUAL_AGE_USERNAME: ${{ secrets.VIRTUAL_AGE_USERNAME }}
+      VIRTUAL_AGE_PASSWORD: ${{ secrets.VIRTUAL_AGE_PASSWORD }}
+      VIRTUAL_AGE_X_API_KEY: ${{ secrets.VIRTUAL_AGE_X_API_KEY }}
+      VIRTUAL_AGE_BRANCH: ${{ vars.VIRTUAL_AGE_BRANCH || '313' }}
+      VIRTUAL_AGE_BRANCH_CODES: ${{ vars.VIRTUAL_AGE_BRANCH_CODES || '313' }}
+      VIRTUAL_AGE_SHIPPING_COMPANY_CODE: ${{ vars.VIRTUAL_AGE_SHIPPING_COMPANY_CODE || '88442' }}
+      VIRTUAL_AGE_ORDER_STATUS_LIST: ${{ vars.VIRTUAL_AGE_ORDER_STATUS_LIST || 'Attended' }}
+      VIRTUAL_AGE_ORDER_EXPAND: ${{ vars.VIRTUAL_AGE_ORDER_EXPAND || 'items,invoices,shippingAddress' }}
+      VIRTUAL_AGE_ORDER_PAGE_SIZE: ${{ vars.VIRTUAL_AGE_ORDER_PAGE_SIZE || '100' }}
+      VIRTUAL_AGE_ORDER_MAX_PAGES: ${{ vars.VIRTUAL_AGE_ORDER_MAX_PAGES || '100' }}
+
+      JT_ENVIRONMENT: ${{ vars.JT_ENVIRONMENT || 'producao' }}
+      JT_BASE_URL: ${{ vars.JT_BASE_URL || 'https://openapi.jtjms-br.com/webopenplatformapi/api' }}
+      JT_API_ACCOUNT: ${{ secrets.JT_API_ACCOUNT }}
+      JT_PRIVATE_KEY: ${{ secrets.JT_PRIVATE_KEY }}
+      JT_CUSTOMER_CODE: ${{ secrets.JT_CUSTOMER_CODE }}
+      JT_CUSTOMER_PASSWORD: ${{ secrets.JT_CUSTOMER_PASSWORD }}
+      JT_EXPRESS_TYPE: ${{ vars.JT_EXPRESS_TYPE || 'standard' }}
+      JT_ORDER_TYPE: ${{ vars.JT_ORDER_TYPE || '2' }}
+      JT_SERVICE_TYPE: ${{ vars.JT_SERVICE_TYPE || '01' }}
+      JT_DELIVERY_TYPE: ${{ vars.JT_DELIVERY_TYPE || '03' }}
+      JT_PAY_TYPE: ${{ vars.JT_PAY_TYPE || 'PP_PM' }}
+      JT_GOODS_TYPE: ${{ vars.JT_GOODS_TYPE || 'bm000006' }}
+      JT_INVOICE_TYPE: ${{ vars.JT_INVOICE_TYPE || 'NFe' }}
+      JT_RECEIVER_FALLBACK_PHONE: ${{ secrets.JT_RECEIVER_FALLBACK_PHONE }}
+      JT_SENDER_NAME: ${{ vars.JT_SENDER_NAME }}
+      JT_SENDER_TAX_NUMBER: ${{ secrets.JT_SENDER_TAX_NUMBER }}
+      JT_SENDER_MOBILE: ${{ secrets.JT_SENDER_MOBILE }}
+      JT_SENDER_PHONE: ${{ secrets.JT_SENDER_PHONE }}
+      JT_SENDER_POST_CODE: ${{ vars.JT_SENDER_POST_CODE }}
+      JT_SENDER_STATE: ${{ vars.JT_SENDER_STATE }}
+      JT_SENDER_CITY: ${{ vars.JT_SENDER_CITY }}
+      JT_SENDER_AREA: ${{ vars.JT_SENDER_AREA }}
+      JT_SENDER_STREET: ${{ vars.JT_SENDER_STREET }}
+      JT_SENDER_STREET_NUMBER: ${{ vars.JT_SENDER_STREET_NUMBER }}
+      JT_SENDER_ADDRESS: ${{ vars.JT_SENDER_ADDRESS }}
+      JT_SENDER_IE_NUMBER: ${{ vars.JT_SENDER_IE_NUMBER }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Checar TypeScript
+        run: npm run check
+
+      - name: Aplicar migrations
+        run: npm run db:migrate
+
+      - name: Rodar sync diario
+        run: npm run sync:daily
+
+      - name: Conferir banco
+        if: always()
+        run: npm run db:inspect
+
+      - name: Exportar ultimo lote
+        if: always()
+        run: npm run monitor:export-orders
+
+      - name: Publicar CSV operacional como artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: orders-latest
+          path: docs/operational-exports/orders-latest.csv
+          if-no-files-found: ignore

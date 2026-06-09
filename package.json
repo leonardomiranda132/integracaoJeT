@@ -1,0 +1,47 @@
+{
+  "name": "integracao-jt-virtual-age",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Integracao batch diaria entre Virtual Age/TOTVS Moda e J&T Open Platform.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "db:migrate": "tsx src/app/jobs/run-migrations.ts",
+    "db:inspect": "tsx src/app/jobs/inspect-postgres-report.ts",
+    "dev": "tsx src/app/main.ts",
+    "start": "node dist/app/main.js",
+    "ui:dev": "dotenv -e .env -- next dev dashboard",
+    "ui:build": "dotenv -e .env -- next build dashboard",
+    "ui:start": "dotenv -e .env -- next start dashboard",
+    "sync:daily": "tsx src/app/jobs/run-daily-pickup-sync.ts",
+    "sync:window": "tsx src/app/jobs/run-window-pickup-sync.ts",
+    "smoke:totvs-orders": "tsx src/app/jobs/smoke-totvs-search-orders.ts",
+    "dry-run:jt-order": "tsx src/app/jobs/dry-run-jt-order.ts",
+    "send:jt-order": "tsx src/app/jobs/send-jt-order.ts",
+    "monitor:order": "tsx src/app/jobs/inspect-order.ts",
+    "monitor:export-orders": "tsx src/app/jobs/export-monitoring-orders.ts",
+    "reprocess:queue": "tsx src/app/jobs/queue-reprocess-order.ts",
+    "reprocess:run": "tsx src/app/jobs/run-reprocess-queue.ts",
+    "override:order": "tsx src/app/jobs/upsert-order-override.ts"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "dotenv-cli": "^8.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0"
+  },
+  "dependencies": {
+    "lucide-react": "^0.552.0",
+    "next": "^16.2.2",
+    "pg": "^8.21.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  }
+}
