@@ -56,6 +56,12 @@ Build de producao:
 npm run ui:build
 ```
 
+Validar deploy publicado sem depender do banco:
+
+```text
+/api/health
+```
+
 Subir build local:
 
 ```bash

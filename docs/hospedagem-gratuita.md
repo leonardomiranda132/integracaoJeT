@@ -66,11 +66,21 @@ Build command:
 npm run ui:build
 ```
 
+Configuracao recomendada no projeto Vercel:
+
+- Framework Preset: `Next.js`
+- Root Directory: raiz do repositorio, sem selecionar `dashboard`
+- Output Directory: `dashboard/.next`
+
 Variaveis do painel:
 
 - `DATABASE_URL`
 - `POSTGRES_SSL=true`
 - `POSTGRES_SSL_REJECT_UNAUTHORIZED=true`
+
+Checklist detalhado e diagnostico do erro `DEPLOYMENT_NOT_FOUND`:
+
+- [docs/proximos-passos-vercel.md](/Users/leonardomiranda/Documents/IntergracaoJ&T/docs/proximos-passos-vercel.md:1)
 
 Antes de publicar o painel, adicionar autenticacao ou protecao por senha.
 
