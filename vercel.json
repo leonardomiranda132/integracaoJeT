@@ -2,5 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "buildCommand": "npm run ui:build",
-  "outputDirectory": "dashboard/.next"
+  "outputDirectory": "dashboard/.next",
+  "crons": [
+    {
+      "path": "/api/cron/daily-real-sync",
+      "schedule": "0 20 * * *"
+    }
+  ]
 }

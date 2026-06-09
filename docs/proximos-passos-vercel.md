@@ -49,6 +49,7 @@ POSTGRES_SSL_REJECT_UNAUTHORIZED=true
 POSTGRES_POOL_MAX=5
 OPERATIONS_ACTION_TOKEN=<senha operacional forte>
 GITHUB_WORKFLOW_DISPATCH_TOKEN=<token GitHub com permissao de workflow dispatch>
+CRON_SECRET=<segredo usado pelo Vercel Cron>
 ```
 
 Nao usar `DATABASE_URL` apontando para `localhost`, porque o Vercel nao consegue
@@ -63,9 +64,11 @@ Para os botoes operacionais do dashboard:
 - `OPERATIONS_ACTION_TOKEN` protege limpeza de banco e envio real.
 - `GITHUB_WORKFLOW_DISPATCH_TOKEN` e usado apenas no servidor para disparar
   `.github/workflows/sync-diario-jt.yml` com `send_enabled=true`.
-- `JT_SEND_ENABLED` continua sendo variavel do GitHub Actions para o agendamento
-  automatico. O botao manual do painel nao precisa de `JT_SEND_ENABLED` no
-  Vercel, porque envia `send_enabled=true` no disparo do workflow.
+- `CRON_SECRET` protege `/api/cron/daily-real-sync`.
+- O envio automatico das 17:00 e registrado em `vercel.json` como Vercel Cron
+  `0 20 * * *`, porque o cron usa UTC.
+- `JT_SEND_ENABLED` nao e necessario no Vercel para o botao manual nem para o
+  Vercel Cron; ambos enviam `send_enabled=true` no disparo do workflow.
 - O token operacional deve ficar fora do Git; se for salvo localmente, manter em
   arquivo ignorado, como `.operations-token`.
 

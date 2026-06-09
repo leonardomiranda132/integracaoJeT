@@ -14,7 +14,8 @@ git@github.com:leonardomiranda132/integracaoJeT.git
 ## Arquitetura recomendada
 
 ```text
-GitHub Actions 17h
+Vercel Cron 17h
+  -> dispara GitHub Actions
   -> npm run db:migrate
   -> npm run sync:daily
   -> TOTVS Moda
@@ -45,13 +46,19 @@ O workflow esta em:
 
 - [.github/workflows/sync-diario-jt.yml](/Users/leonardomiranda/Documents/IntergracaoJ&T/.github/workflows/sync-diario-jt.yml:1)
 
-Ele roda:
+Ele tambem pode ser rodado manualmente pelo botao `Run workflow`.
 
-- todo dia as 20:00 UTC, equivalente a 17:00 em Sao Paulo
+O disparo automatico diario fica no Vercel Cron em `vercel.json`:
+
+- `/api/cron/daily-real-sync`
+- `0 20 * * *`, equivalente a 17:00 em Sao Paulo
+
+O workflow roda:
+
 - manualmente pelo botao `Run workflow`
 
-Por seguranca, no agendamento automatico o envio real so liga quando a variavel
-do repositorio `JT_SEND_ENABLED` estiver como `true`.
+No disparo automatico do Vercel Cron, o painel chama o workflow com
+`send_enabled=true` e usa `DAILY_SEND_LIMIT` do ambiente Vercel como limite.
 
 ### Painel
 

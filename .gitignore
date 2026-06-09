@@ -3,6 +3,7 @@ dist
 .env
 env
 .operations-token
+.cron-secret
 dashboard/.next
 docs/operational-exports/*.csv
 .aider*

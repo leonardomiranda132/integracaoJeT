@@ -1,9 +1,6 @@
 name: Sync diario J&T
 
 on:
-  schedule:
-    # 17:00 em America/Sao_Paulo. O cron do GitHub usa UTC.
-    - cron: "0 20 * * *"
   workflow_dispatch:
     inputs:
       send_enabled:
@@ -91,13 +88,8 @@ jobs:
       - name: Configurar modo operacional
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            jt_send_enabled="${{ vars.JT_SEND_ENABLED }}"
-            daily_send_limit="${{ vars.DAILY_SEND_LIMIT }}"
-          else
-            jt_send_enabled="${{ github.event.inputs.send_enabled }}"
-            daily_send_limit="${{ github.event.inputs.daily_send_limit }}"
-          fi
+          jt_send_enabled="${{ github.event.inputs.send_enabled }}"
+          daily_send_limit="${{ github.event.inputs.daily_send_limit }}"
 
           if [ -z "$jt_send_enabled" ]; then
             jt_send_enabled="false"

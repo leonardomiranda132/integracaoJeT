@@ -17,8 +17,11 @@ Status operacional neste momento:
 - A base local de operacao foi limpa em 2026-06-03 a pedido do usuario; as tabelas ficaram zeradas e `schema_migrations` foi preservada.
 - O repositorio GitHub oficial foi migrado para `leonardomiranda132/integracaoJeT`.
 - GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 via `npm run github:actions-config`.
-- O workflow `Sync diario J&T` esta ativo no GitHub.
-- O agendamento automatico esta seguro neste momento: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
+- O workflow `Sync diario J&T` esta ativo no GitHub para execucao por dispatch.
+- O agendamento automatico principal passou a ser Vercel Cron em 2026-06-09,
+  chamando `/api/cron/daily-real-sync` as 20:00 UTC, equivalente a 17:00 em Sao Paulo.
+- O envio automatico do Vercel Cron dispara o workflow com `send_enabled=true`
+  e respeita `DAILY_SEND_LIMIT` do ambiente Vercel.
 - A primeira execucao remota manual em 2026-06-09 (`runId=27222528597`) falhou como `startup_failure` antes de criar jobs; o workflow foi ajustado para configurar `JT_SEND_ENABLED` e `DAILY_SEND_LIMIT` em um passo shell, reduzindo expressoes no bloco `env`.
 - A segunda execucao remota manual em 2026-06-09 (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub informou que o job nao iniciou por pagamento recente com falha ou necessidade de aumentar o limite de gastos em `Billing & plans`.
 - Apos migracao para `leonardomiranda132/integracaoJeT`, o workflow iniciou corretamente, mas a primeira tentativa (`runId=27223133855`) falhou em `db:migrate` porque `DATABASE_URL` foi cadastrado a partir do `.env` local e apontava para `localhost:5432`.
@@ -388,7 +391,9 @@ Foi validado na pratica:
 - resultado do envio real de 2026-06-08: `syncRunId=0e684902-6982-4594-a6db-65b96c77dfd9`, `pagesRead=3`, `ordersRead=161`, `pickupsSent=161`, `pickupsCreated=161`, `errors=0`
 - conferencia Postgres apos envio: `pickup_requests` ficou com 161 registros `created`, sem pendencias abertas e sem erros recentes
 - CSV operacional atualizado em `docs/operational-exports/orders-latest.csv` com 161 linhas e sem CPF, telefone ou endereco
-- workflow GitHub Actions diario criado em `.github/workflows/sync-diario-jt.yml`, agendado para 17:00 Sao Paulo e com trava para envio real via variavel `JT_SEND_ENABLED`
+- workflow GitHub Actions criado em `.github/workflows/sync-diario-jt.yml` para
+  receber `workflow_dispatch`; o agendamento de 17:00 Sao Paulo fica no Vercel Cron
+  para evitar atraso/drop do schedule nativo do GitHub
 - guia de hospedagem gratuita criado em `docs/hospedagem-gratuita.md` com arquitetura GitHub Actions + Neon Postgres + Netlify/Vercel
 - projeto migrado para o GitHub em `leonardomiranda132/integracaoJeT`, branch `main`
 - workflow GitHub Actions validado no novo repositorio em dry-run remoto (`runId=27223325769`)
@@ -416,7 +421,7 @@ Detalhamento operacional: [docs/proximos-passos-producao.md](/Users/leonardomira
 4. Criar/publicar o repositorio no GitHub e cadastrar os Secrets/Variables do workflow.
 5. Criar banco Neon e apontar `DATABASE_URL` para ele.
 6. Adicionar autenticacao interna e auditoria de acoes da interface.
-7. Manter `DAILY_SEND_LIMIT` definido no `.env` enquanto o cron definitivo nao for aprovado.
+7. Manter `DAILY_SEND_LIMIT` definido no Vercel enquanto o cron definitivo nao for aprovado.
 8. Implementar consulta/cancelamento/etiqueta/rastreio na J&T.
 
 ## Como manter este arquivo atualizado
