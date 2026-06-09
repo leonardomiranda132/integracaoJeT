@@ -68,6 +68,7 @@ const valueFor = (flag) => {
 
 const dryRun = hasFlag('--dry-run');
 const allowScheduledRealSend = hasFlag('--allow-real-send-schedule');
+const allowLocalDatabaseUrl = hasFlag('--allow-local-database-url');
 const repo = valueFor('--repo') ?? process.env.GITHUB_REPOSITORY_TARGET ?? DEFAULT_REPOSITORY;
 const envPath = path.resolve(valueFor('--env-file') ?? '.env');
 
@@ -123,6 +124,23 @@ function assertGhReady() {
   }
 }
 
+function assertSafeDatabaseUrl(value) {
+  let parsed;
+
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error('DATABASE_URL invalida.');
+  }
+
+  const localHosts = new Set(['localhost', '127.0.0.1', '::1']);
+  if (!allowLocalDatabaseUrl && localHosts.has(parsed.hostname)) {
+    throw new Error(
+      'DATABASE_URL aponta para banco local. Use GITHUB_ACTIONS_DATABASE_URL para cadastrar a URL do Neon ou rode com --allow-local-database-url conscientemente.',
+    );
+  }
+}
+
 function printPlan(secrets, variables, missingRequired, missingOptional) {
   console.log(JSON.stringify({
     repository: repo,
@@ -137,6 +155,11 @@ function printPlan(secrets, variables, missingRequired, missingOptional) {
 
 try {
   const env = parseEnvFile(envPath);
+
+  if (process.env.GITHUB_ACTIONS_DATABASE_URL) {
+    env.set('DATABASE_URL', process.env.GITHUB_ACTIONS_DATABASE_URL);
+  }
+
   const requiredSecrets = REQUIRED_SECRETS.map((key) => [key, env.get(key)]).filter(([, value]) => value);
   const optionalSecrets = OPTIONAL_SECRETS.map((key) => [key, env.get(key)]).filter(([, value]) => value);
   const missingRequired = REQUIRED_SECRETS.filter((key) => !env.get(key));
@@ -154,6 +177,8 @@ try {
   if (dryRun) {
     process.exit(0);
   }
+
+  assertSafeDatabaseUrl(env.get('DATABASE_URL'));
 
   assertGhReady();
 

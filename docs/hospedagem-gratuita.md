@@ -97,6 +97,16 @@ brew install gh
 gh auth login
 ```
 
+Se o `.env` local estiver usando Postgres local, cadastrar a URL do Neon sem
+alterar o `.env` assim:
+
+```bash
+GITHUB_ACTIONS_DATABASE_URL="postgresql://..." npm run github:actions-config
+```
+
+O comando bloqueia `DATABASE_URL=localhost` por padrao para evitar que o
+GitHub Actions tente conectar em `127.0.0.1:5432`.
+
 Por seguranca, o comando cadastra a variable `JT_SEND_ENABLED=false` mesmo que o
 `.env` local esteja diferente. Para permitir que o agendamento automatico use o
 valor do `.env`, rode somente depois da validacao operacional:

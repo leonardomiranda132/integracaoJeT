@@ -21,6 +21,7 @@ Status operacional neste momento:
 - O agendamento automatico esta seguro neste momento: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
 - A primeira execucao remota manual em 2026-06-09 (`runId=27222528597`) falhou como `startup_failure` antes de criar jobs; o workflow foi ajustado para configurar `JT_SEND_ENABLED` e `DAILY_SEND_LIMIT` em um passo shell, reduzindo expressoes no bloco `env`.
 - A segunda execucao remota manual em 2026-06-09 (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub informou que o job nao iniciou por pagamento recente com falha ou necessidade de aumentar o limite de gastos em `Billing & plans`.
+- Apos migracao para `leonardomiranda132/integracaoJeT`, o workflow iniciou corretamente, mas a primeira tentativa (`runId=27223133855`) falhou em `db:migrate` porque `DATABASE_URL` foi cadastrado a partir do `.env` local e apontava para `localhost:5432`.
 
 Ja foi validado com sucesso:
 
@@ -54,7 +55,8 @@ Ja foi validado com sucesso:
 - reserva anti-duplicidade em `pickup_requests.txlogistic_id` adicionada antes da chamada real J&T
 - painel redesenhado com fluxo operacional conectado e formulario direto para reprocessar pedido por filial/pedido
 - GitHub Actions Secrets e Variables cadastradas e conferidas sem expor valores; `POSTGRES_SSL` foi corrigido para `true` por causa do Neon e `JT_SEND_ENABLED` foi confirmado como `false`
-- bloqueio atual para validar o dry-run remoto: resolver o Billing/limite de gastos do GitHub na organizacao/conta antes de novas execucoes do workflow
+- bloqueio de Billing foi contornado com a migracao para `leonardomiranda132/integracaoJeT`; o bloqueio atual do dry-run remoto e corrigir `DATABASE_URL` para Neon
+- helper `npm run github:actions-config` endurecido para bloquear cadastro de `DATABASE_URL` local no GitHub Actions; usar `GITHUB_ACTIONS_DATABASE_URL` para passar a URL Neon
 
 Pedido validado com sucesso na J&T:
 

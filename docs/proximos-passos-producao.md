@@ -56,6 +56,7 @@ Principais lacunas antes de producao:
 - GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 e conferidas sem expor valores; o estado seguro atual e `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`
 - a primeira execucao remota manual (`runId=27222528597`) falhou como `startup_failure` sem jobs; o workflow foi simplificado para configurar modo operacional em passo shell antes de nova tentativa
 - a segunda execucao remota manual (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub apontou Billing/limite de gastos como causa, entao o dry-run remoto esta bloqueado ate regularizar `Billing & plans`
+- o projeto foi migrado para `leonardomiranda132/integracaoJeT`; o workflow passou a iniciar, mas a primeira execucao no repo novo (`runId=27223133855`) falhou porque `DATABASE_URL` apontava para `localhost:5432` em vez do Neon
 
 ## Principios para entrada em producao
 
@@ -452,7 +453,7 @@ No-go se:
 
 ## Ordem sugerida de implementacao
 
-1. Resolver o bloqueio de Billing/limite de gastos no GitHub em `Billing & plans` da conta/organizacao.
+1. Corrigir a Secret `DATABASE_URL` do GitHub Actions para apontar para o Neon, nao para o Postgres local.
 2. Rodar novamente o workflow GitHub Actions manual em dry-run (`send_enabled=false`) para validar Neon, migrations, TOTVS, exportacao e painel remoto sem enviar para a J&T.
 3. Conferir o artifact `orders-latest` e o `db:inspect` do workflow.
 4. Conferir o lote real de 2026-06-08 com 161 `billCode` criados na J&T.
