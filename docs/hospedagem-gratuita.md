@@ -238,6 +238,8 @@ O CSV final fica como artifact `orders-latest`.
 - Migrations aplicadas pelo workflow.
 - `DATABASE_URL` esta em Secret, nunca no codigo.
 - Secrets e Variables conferidas com `npm run github:actions-config -- --dry-run`.
+- Em 2026-06-09, Secrets e Variables foram cadastradas no GitHub com sucesso.
+- Estado seguro confirmado: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
 - Primeiro `Run workflow` manual com `send_enabled=false` passou sem erro.
 - Painel consegue ler o banco Neon.
 - Operacao conferiu o CSV do dry-run.

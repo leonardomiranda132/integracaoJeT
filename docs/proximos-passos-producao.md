@@ -53,6 +53,7 @@ Principais lacunas antes de producao:
 - envio real em massa foi executado em 2026-06-08 apos confirmacao explicita do usuario: 161 pedidos/coletas criados na J&T, `errors=0`
 - workflow GitHub Actions diario foi criado em `.github/workflows/sync-diario-jt.yml`, com agendamento as 17:00 Sao Paulo e envio real controlado por `JT_SEND_ENABLED`
 - comando `npm run github:actions-config` foi adicionado para cadastrar GitHub Actions Secrets e Variables a partir do `.env`, usando `gh` autenticado e mantendo `JT_SEND_ENABLED=false` por seguranca no cadastro inicial
+- GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 e conferidas sem expor valores; o estado seguro atual e `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`
 
 ## Principios para entrada em producao
 
@@ -449,17 +450,18 @@ No-go se:
 
 ## Ordem sugerida de implementacao
 
-1. Colocar a interface operacional no fluxo diario de conferencia.
-2. Conferir o lote real de 2026-06-08 com 161 `billCode` criados na J&T.
-3. Confirmar com a operacao se o proximo envio real sera assistido ou cron definitivo.
-4. Confirmar que todos os pedidos filtrados continuam sendo realmente J&T/JET `88442`.
-5. Publicar o repositorio no GitHub e cadastrar Secrets/Variables conforme `docs/hospedagem-gratuita.md`.
-6. Criar Neon Postgres e validar `npm run db:migrate` pelo workflow.
-7. Testar o reprocessamento real em dry-run pela interface quando surgir pendencia real.
-8. Adicionar autenticacao interna e auditoria de acoes do painel.
-9. Manter `DAILY_SEND_LIMIT` no `.env` ate aprovar a rotina automatica.
-10. Ajustar elegibilidade/reprocessamento conforme divergencias do piloto.
-11. Ligar cron definitivo com acompanhamento.
+1. Rodar o workflow GitHub Actions manual em dry-run (`send_enabled=false`) para validar Neon, migrations, TOTVS, exportacao e painel remoto sem enviar para a J&T.
+2. Conferir o artifact `orders-latest` e o `db:inspect` do workflow.
+3. Conferir o lote real de 2026-06-08 com 161 `billCode` criados na J&T.
+4. Publicar o painel em Netlify ou Vercel apontando para o Neon.
+5. Adicionar autenticacao ou protecao por senha no painel antes de uso operacional.
+6. Colocar a interface operacional no fluxo diario de conferencia.
+7. Testar o reprocessamento em dry-run pela interface quando surgir pendencia real.
+8. Confirmar com a operacao se o proximo envio real sera assistido ou cron definitivo.
+9. Se ainda houver inseguranca operacional, manter `JT_SEND_ENABLED=false` no agendamento e usar `Run workflow` manual com limite.
+10. Para piloto automatico limitado, configurar `JT_SEND_ENABLED=true` e manter `DAILY_SEND_LIMIT=10`.
+11. Para rotina definitiva, remover `DAILY_SEND_LIMIT` somente depois de alguns ciclos estaveis e conferidos.
+12. Ajustar elegibilidade/reprocessamento conforme divergencias do piloto.
 
 ## Resultado esperado
 

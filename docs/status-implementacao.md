@@ -1,6 +1,6 @@
 # Status da Implementacao
 
-Atualizado em: 2026-06-08.
+Atualizado em: 2026-06-09.
 
 Este documento registra o estado real da integracao no repositorio, o que ja foi validado na pratica e o que ainda falta para a operacao ficar pronta para lote diario com seguranca.
 
@@ -15,6 +15,10 @@ Status operacional neste momento:
 - O caminho seguro de conferencia continua sendo dry-run, exportacao do lote e `npm run db:inspect` antes de novas execucoes reais.
 - A interface operacional propria em `Next.js` ja foi implementada e substituiu o n8n como caminho oficial.
 - A base local de operacao foi limpa em 2026-06-03 a pedido do usuario; as tabelas ficaram zeradas e `schema_migrations` foi preservada.
+- O repositorio GitHub esta publicado em `integracoes-alphabeto/Integra-aoJ-T`.
+- GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 via `npm run github:actions-config`.
+- O workflow `Sync diario J&T` esta ativo no GitHub.
+- O agendamento automatico esta seguro neste momento: `JT_SEND_ENABLED=false`, `DAILY_SEND_LIMIT=10` e `POSTGRES_SSL=true`.
 
 Ja foi validado com sucesso:
 
@@ -47,6 +51,7 @@ Ja foi validado com sucesso:
 - paginacao TOTVS validada em dry-run real com `pagesRead=2` e `ordersRead=102`; `pageSize=100` e tamanho de pagina, nao limite total do lote
 - reserva anti-duplicidade em `pickup_requests.txlogistic_id` adicionada antes da chamada real J&T
 - painel redesenhado com fluxo operacional conectado e formulario direto para reprocessar pedido por filial/pedido
+- GitHub Actions Secrets e Variables cadastradas e conferidas sem expor valores; `POSTGRES_SSL` foi corrigido para `true` por causa do Neon e `JT_SEND_ENABLED` foi confirmado como `false`
 
 Pedido validado com sucesso na J&T:
 

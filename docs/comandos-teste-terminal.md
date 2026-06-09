@@ -1,6 +1,6 @@
 # Comandos de Teste no Terminal
 
-Atualizado em: 2026-06-03.
+Atualizado em: 2026-06-09.
 
 Este documento junta os comandos principais para validar a integracao no terminal sem depender do historico do chat.
 
@@ -48,6 +48,45 @@ Exportar pedidos do ultimo sync para conferencia sem dados sensiveis:
 ```bash
 npm run monitor:export-orders
 npm run monitor:export-orders -- --format=json
+```
+
+## GitHub Actions remoto
+
+Conferir Secrets cadastradas sem exibir valores:
+
+```bash
+gh secret list --repo integracoes-alphabeto/Integra-aoJ-T
+```
+
+Conferir Variables cadastradas:
+
+```bash
+gh variable list --repo integracoes-alphabeto/Integra-aoJ-T
+```
+
+Manter o agendamento automatico em modo seguro:
+
+```bash
+gh variable set JT_SEND_ENABLED --repo integracoes-alphabeto/Integra-aoJ-T --body false
+gh variable set POSTGRES_SSL --repo integracoes-alphabeto/Integra-aoJ-T --body true
+```
+
+Rodar o workflow manual em dry-run, sem envio para a J&T:
+
+```bash
+gh workflow run sync-diario-jt.yml --repo integracoes-alphabeto/Integra-aoJ-T --field send_enabled=false --field daily_send_limit=10
+```
+
+Ver execucoes recentes:
+
+```bash
+gh run list --repo integracoes-alphabeto/Integra-aoJ-T --workflow sync-diario-jt.yml --limit 5
+```
+
+Assistir logs de uma execucao:
+
+```bash
+gh run watch --repo integracoes-alphabeto/Integra-aoJ-T <run-id>
 ```
 
 ## Smoke test do TOTVS
