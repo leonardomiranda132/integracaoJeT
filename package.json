@@ -23,7 +23,8 @@
     "monitor:export-orders": "tsx src/app/jobs/export-monitoring-orders.ts",
     "reprocess:queue": "tsx src/app/jobs/queue-reprocess-order.ts",
     "reprocess:run": "tsx src/app/jobs/run-reprocess-queue.ts",
-    "override:order": "tsx src/app/jobs/upsert-order-override.ts"
+    "override:order": "tsx src/app/jobs/upsert-order-override.ts",
+    "github:actions-config": "node scripts/register-github-actions-config.mjs"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -1,6 +1,6 @@
 # Proximos Passos para Producao
 
-Atualizado em: 2026-06-08.
+Atualizado em: 2026-06-09.
 
 Este documento organiza o caminho recomendado para sair da validacao tecnica atual e chegar em uma operacao diaria de producao com seguranca, rastreabilidade e menor risco de duplicidade.
 
@@ -52,6 +52,7 @@ Principais lacunas antes de producao:
 - o dashboard foi redesenhado com fluxo operacional conectado e formulario para reprocessar pedido especifico por filial/pedido
 - envio real em massa foi executado em 2026-06-08 apos confirmacao explicita do usuario: 161 pedidos/coletas criados na J&T, `errors=0`
 - workflow GitHub Actions diario foi criado em `.github/workflows/sync-diario-jt.yml`, com agendamento as 17:00 Sao Paulo e envio real controlado por `JT_SEND_ENABLED`
+- comando `npm run github:actions-config` foi adicionado para cadastrar GitHub Actions Secrets e Variables a partir do `.env`, usando `gh` autenticado e mantendo `JT_SEND_ENABLED=false` por seguranca no cadastro inicial
 
 ## Principios para entrada em producao
 

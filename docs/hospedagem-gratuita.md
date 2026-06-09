@@ -82,6 +82,29 @@ Cadastrar em:
 GitHub repo -> Settings -> Secrets and variables -> Actions -> Secrets
 ```
 
+Tambem existe um comando local para cadastrar Secrets e Variables a partir do
+`.env`, sem imprimir valores sensiveis:
+
+```bash
+npm run github:actions-config -- --dry-run
+npm run github:actions-config
+```
+
+Esse comando usa o GitHub CLI (`gh`). Antes de executar:
+
+```bash
+brew install gh
+gh auth login
+```
+
+Por seguranca, o comando cadastra a variable `JT_SEND_ENABLED=false` mesmo que o
+`.env` local esteja diferente. Para permitir que o agendamento automatico use o
+valor do `.env`, rode somente depois da validacao operacional:
+
+```bash
+npm run github:actions-config -- --allow-real-send-schedule
+```
+
 Obrigatorios:
 
 ```text
@@ -214,6 +237,7 @@ O CSV final fica como artifact `orders-latest`.
 - Neon criado e acessivel.
 - Migrations aplicadas pelo workflow.
 - `DATABASE_URL` esta em Secret, nunca no codigo.
+- Secrets e Variables conferidas com `npm run github:actions-config -- --dry-run`.
 - Primeiro `Run workflow` manual com `send_enabled=false` passou sem erro.
 - Painel consegue ler o banco Neon.
 - Operacao conferiu o CSV do dry-run.
