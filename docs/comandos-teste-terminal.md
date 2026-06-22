@@ -259,6 +259,17 @@ Observacao:
 - no smoke de 2026-06-03, `BillingReleased` retornou zero pedidos JET e a janela de 30 dias sem status retornou pedidos com `statusOrder=Attended`; por decisao operacional, o filtro padrao passou a ser `Attended`
 - ele depende das variaveis do `.env` estarem corretas
 
+Sincronizar somente pedidos especificos, sem depender da janela de datas:
+
+```bash
+PERSISTENCE_ADAPTER=memory JT_SEND_ENABLED=false npm run sync:orders -- --orders=507713,507788,507803
+```
+
+Para envio real remoto, usar o workflow `Sync diario J&T` com
+`send_enabled=true` e `order_codes=507713,507788,507803`. Este caminho deve ser
+preferido quando o pedido ainda nao entrou no banco operacional e abrir uma
+janela historica poderia trazer outros pedidos.
+
 ## Monitoramento e reprocessamento
 
 Aplicar as tabelas operacionais:

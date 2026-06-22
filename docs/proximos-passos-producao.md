@@ -1,6 +1,6 @@
 # Proximos Passos para Producao
 
-Atualizado em: 2026-06-09.
+Atualizado em: 2026-06-22.
 
 Este documento organiza o caminho recomendado para sair da validacao tecnica atual e chegar em uma operacao diaria de producao com seguranca, rastreabilidade e menor risco de duplicidade.
 
@@ -54,6 +54,12 @@ Principais lacunas antes de producao:
 - workflow GitHub Actions diario foi criado em `.github/workflows/sync-diario-jt.yml`, com agendamento as 17:00 Sao Paulo e envio real controlado por `JT_SEND_ENABLED`
 - comando `npm run github:actions-config` foi adicionado para cadastrar GitHub Actions Secrets e Variables a partir do `.env`, usando `gh` autenticado e mantendo `JT_SEND_ENABLED=false` por seguranca no cadastro inicial
 - GitHub Actions Secrets e Variables foram cadastradas em 2026-06-09 e conferidas sem expor valores; em 2026-06-09 o limite padrao foi removido, mantendo `DAILY_SEND_LIMIT` vazio/ausente para enviar todos quando `JT_SEND_ENABLED=true`
+- em 2026-06-22, a janela diaria foi corrigida para cobrir do corte anterior
+  `17:00` ate o corte atual `17:00`, evitando perda permanente de pedidos que
+  mudam logo apos o horario de corte
+- em 2026-06-22, foi adicionado `npm run sync:orders` e o input
+  `order_codes` no GitHub Actions para recuperar pedidos especificos sem abrir
+  uma janela ampla de envio
 - a primeira execucao remota manual (`runId=27222528597`) falhou como `startup_failure` sem jobs; o workflow foi simplificado para configurar modo operacional em passo shell antes de nova tentativa
 - a segunda execucao remota manual (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub apontou Billing/limite de gastos como causa, entao o dry-run remoto esta bloqueado ate regularizar `Billing & plans`
 - o projeto foi migrado para `leonardomiranda132/integracaoJeT`; o workflow passou a iniciar, mas a primeira execucao no repo novo (`runId=27223133855`) falhou porque `DATABASE_URL` apontava para `localhost:5432` em vez do Neon
@@ -78,7 +84,9 @@ Checklist:
 - Confirmar que o codigo da transportadora JET/J&T no TOTVS e `88442`.
 - Confirmar quais filiais entram no primeiro escopo.
 - Confirmar qual status TOTVS representa pedido pronto para coleta.
-- Confirmar que a janela diaria sera de `00:00:00` ate `17:00:00`, considerando fechamento operacional por volta das `16:30`.
+- Confirmar que a janela diaria deve cobrir do corte anterior `17:00:00` ate
+  o corte atual `17:00:00`, considerando fechamento operacional por volta das
+  `16:30` e evitando lacunas para pedidos alterados apos o corte.
 - Confirmar se o envio sera sempre volume unico com `totalQuantity=1`.
 - Confirmar que a operacao nao usa COD/cobranca na entrega.
 - Confirmar se pedidos parcialmente atendidos devem entrar ou aguardar outra regra.

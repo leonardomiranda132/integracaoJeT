@@ -15,6 +15,7 @@
     "ui:build": "dotenv -e .env -- next build dashboard",
     "ui:start": "dotenv -e .env -- next start dashboard",
     "sync:daily": "tsx src/app/jobs/run-daily-pickup-sync.ts",
+    "sync:orders": "tsx src/app/jobs/run-order-code-pickup-sync.ts",
     "sync:window": "tsx src/app/jobs/run-window-pickup-sync.ts",
     "smoke:totvs-orders": "tsx src/app/jobs/smoke-totvs-search-orders.ts",
     "dry-run:jt-order": "tsx src/app/jobs/dry-run-jt-order.ts",

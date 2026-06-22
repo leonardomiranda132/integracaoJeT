@@ -15,6 +15,10 @@ on:
         description: "Limite de envios reais. Use vazio para enviar todos."
         required: false
         default: ""
+      order_codes:
+        description: "Pedidos especificos separados por virgula. Use vazio para rotina diaria."
+        required: false
+        default: ""
 
 concurrency:
   group: sync-diario-jt
@@ -90,6 +94,7 @@ jobs:
         run: |
           jt_send_enabled="${{ github.event.inputs.send_enabled }}"
           daily_send_limit="${{ github.event.inputs.daily_send_limit }}"
+          order_codes="${{ github.event.inputs.order_codes }}"
 
           if [ -z "$jt_send_enabled" ]; then
             jt_send_enabled="false"
@@ -97,8 +102,10 @@ jobs:
 
           echo "JT_SEND_ENABLED=$jt_send_enabled" >> "$GITHUB_ENV"
           echo "DAILY_SEND_LIMIT=$daily_send_limit" >> "$GITHUB_ENV"
+          echo "SYNC_ORDER_CODES=$order_codes" >> "$GITHUB_ENV"
           echo "JT_SEND_ENABLED=$jt_send_enabled"
           echo "DAILY_SEND_LIMIT=${daily_send_limit:-sem limite configurado}"
+          echo "SYNC_ORDER_CODES=${order_codes:-rotina diaria}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -115,8 +122,14 @@ jobs:
       - name: Aplicar migrations
         run: npm run db:migrate
 
-      - name: Rodar sync diario
-        run: npm run sync:daily
+      - name: Rodar sync
+        shell: bash
+        run: |
+          if [ -n "$SYNC_ORDER_CODES" ]; then
+            npm run sync:orders
+          else
+            npm run sync:daily
+          fi
 
       - name: Conferir banco
         if: always()

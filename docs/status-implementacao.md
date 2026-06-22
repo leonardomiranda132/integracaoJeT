@@ -1,6 +1,6 @@
 # Status da Implementacao
 
-Atualizado em: 2026-06-09.
+Atualizado em: 2026-06-22.
 
 Este documento registra o estado real da integracao no repositorio, o que ja foi validado na pratica e o que ainda falta para a operacao ficar pronta para lote diario com seguranca.
 
@@ -25,6 +25,12 @@ Status operacional neste momento:
 - Em 2026-06-09 o limite padrao de 10 envios foi removido do painel, do
   workflow, do Vercel e das Variables do GitHub; o token operacional tambem foi
   rotacionado porque o valor anterior ficou exposto durante a operacao.
+- Em 2026-06-22, a janela diaria deixou de buscar apenas `00:00-17:00` do dia
+  corrente e passou a buscar do corte anterior `17:00` ate o corte atual
+  `17:00`, fechando a lacuna de pedidos alterados logo apos o horario de corte.
+- Em 2026-06-22, foi criado o comando `npm run sync:orders` e o input
+  `order_codes` no workflow para sincronizar somente pedidos informados,
+  evitando reprocessamentos por janelas amplas.
 - A primeira execucao remota manual em 2026-06-09 (`runId=27222528597`) falhou como `startup_failure` antes de criar jobs; o workflow foi ajustado para configurar `JT_SEND_ENABLED` e `DAILY_SEND_LIMIT` em um passo shell, reduzindo expressoes no bloco `env`.
 - A segunda execucao remota manual em 2026-06-09 (`runId=27222726787`) tambem falhou como `startup_failure`; a anotacao do GitHub informou que o job nao iniciou por pagamento recente com falha ou necessidade de aumentar o limite de gastos em `Billing & plans`.
 - Apos migracao para `leonardomiranda132/integracaoJeT`, o workflow iniciou corretamente, mas a primeira tentativa (`runId=27223133855`) falhou em `db:migrate` porque `DATABASE_URL` foi cadastrado a partir do `.env` local e apontava para `localhost:5432`.
@@ -67,6 +73,7 @@ Ja foi validado com sucesso:
 - bloqueio de Billing foi contornado com a migracao para `leonardomiranda132/integracaoJeT`; o erro posterior de `DATABASE_URL=localhost` tambem foi corrigido no GitHub Actions
 - helper `npm run github:actions-config` endurecido para bloquear cadastro de `DATABASE_URL` local no GitHub Actions; usar `GITHUB_ACTIONS_DATABASE_URL` para passar a URL Neon
 - workflow remoto em `leonardomiranda132/integracaoJeT` validado em dry-run com Neon, migrations, sync, `db:inspect`, exportacao CSV e upload de artifact
+- dry-run local em memoria validou `npm run sync:orders -- --orders=507713,507788,507803` com `ordersRead=3`, `pickupsDryRun=3` e `errors=0`
 
 Pedido validado com sucesso na J&T:
 

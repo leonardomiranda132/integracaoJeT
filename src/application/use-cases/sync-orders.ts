@@ -47,6 +47,11 @@ export interface SyncOrdersDependencies {
   operationalSettings?: OperationalSettings;
 }
 
+export interface SyncOrdersExecutionOptions {
+  orderCodeList?: number[];
+  useChangeFilter?: boolean;
+}
+
 export class SyncOrdersUseCase {
   private readonly operationalSettings: OperationalSettings;
 
@@ -55,8 +60,15 @@ export class SyncOrdersUseCase {
       dependencies.operationalSettings ?? loadOperationalSettings();
   }
 
-  private buildExecutionLockKey(window: TimeWindow): string {
-    return `sync-orders:${window.startDate}:${window.endDate}`;
+  private buildExecutionLockKey(
+    window: TimeWindow,
+    options: SyncOrdersExecutionOptions,
+  ): string {
+    const orderCodes = options.orderCodeList?.length
+      ? `:orders:${options.orderCodeList.join(",")}`
+      : "";
+
+    return `sync-orders:${window.startDate}:${window.endDate}${orderCodes}`;
   }
 
   private incrementCounter(counter: Map<string, number>, key: string): void {
@@ -127,7 +139,10 @@ export class SyncOrdersUseCase {
     };
   }
 
-  async execute(window: TimeWindow): Promise<void> {
+  async execute(
+    window: TimeWindow,
+    options: SyncOrdersExecutionOptions = {},
+  ): Promise<void> {
     const {
       totvsClient,
       jtClient,
@@ -146,7 +161,7 @@ export class SyncOrdersUseCase {
       pickupValidator,
     } = this.dependencies;
 
-    const lockKey = this.buildExecutionLockKey(window);
+    const lockKey = this.buildExecutionLockKey(window, options);
     const lockAcquired = await executionLockRepository.acquire(lockKey);
 
     if (!lockAcquired) {
@@ -176,6 +191,8 @@ export class SyncOrdersUseCase {
         onPageRead: (page) => {
           pagesRead = page;
         },
+        orderCodeList: options.orderCodeList,
+        useChangeFilter: options.useChangeFilter,
       });
       const orders = searchResult.orders;
       pagesRead = searchResult.pagesRead;

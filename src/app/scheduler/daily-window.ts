@@ -1,5 +1,8 @@
 import type { TimeWindow } from "../../shared/types.js";
 
+const DAILY_CUTOFF_TIME = "17:00:00";
+const ONE_DAY = 1;
+
 function getTimezoneOffset(timezone: string, now: Date): string {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: timezone,
@@ -35,15 +38,32 @@ function getLocalDateParts(timezone: string, now: Date): {
   };
 }
 
+function subtractDays(date: Date, days: number): Date {
+  const next = new Date(date);
+  next.setDate(next.getDate() - days);
+  return next;
+}
+
+function formatLocalDate(parts: {
+  year: string;
+  month: string;
+  day: string;
+}): string {
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
 export async function buildDailyWindow(
   timezone: string,
   now = new Date(),
 ): Promise<TimeWindow> {
-  const { year, month, day } = getLocalDateParts(timezone, now);
+  const currentRunDate = formatLocalDate(getLocalDateParts(timezone, now));
+  const previousRunDate = formatLocalDate(
+    getLocalDateParts(timezone, subtractDays(now, ONE_DAY)),
+  );
   const offset = getTimezoneOffset(timezone, now);
 
   return {
-    startDate: `${year}-${month}-${day}T00:00:00${offset}`,
-    endDate: `${year}-${month}-${day}T17:00:00${offset}`,
+    startDate: `${previousRunDate}T${DAILY_CUTOFF_TIME}${offset}`,
+    endDate: `${currentRunDate}T${DAILY_CUTOFF_TIME}${offset}`,
   };
 }

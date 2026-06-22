@@ -82,6 +82,8 @@ export interface TotvsSearchOrdersResult {
 
 export interface TotvsSearchOrdersOptions {
   onPageRead?: (page: number, ordersRead: number) => void;
+  orderCodeList?: number[];
+  useChangeFilter?: boolean;
 }
 
 function getResponseOrders(response: TotvsRawSearchResponse): TotvsRawOrder[] {
@@ -306,7 +308,11 @@ export class TotvsClient {
         body: JSON.stringify({
           filter: {
             branchCodeList: this.settings.branchCodeList,
-            change: window,
+            change: options.useChangeFilter === false ? undefined : window,
+            orderCodeList:
+              options.orderCodeList && options.orderCodeList.length > 0
+                ? options.orderCodeList
+                : undefined,
             orderStatusList: this.settings.orderStatusList,
             shippingCompanyCode: this.settings.shippingCompanyCode,
             hasShippingCompany: true,
